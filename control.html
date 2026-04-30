@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -302,6 +302,20 @@
 
     .toggle input:checked ~ .toggle-thumb { transform: translateX(20px); }
 
+    /* ─── FEAT LIST (licences) ─── */
+    .feat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-bottom: 1.25rem;
+    }
+    .feat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .feat-label { font-size: 0.84rem; }
+
     /* ─── PASSWORD ─── */
     .divider {
       border: none;
@@ -514,6 +528,14 @@ async function checkStatus(url) {
 function buildCard(client) {
   const s  = client.slug;
   const id = s.replace(/-/g, '_');
+  const tog = (key, label, fn) => `
+    <div class="feat-row">
+      <span class="feat-label">${label}</span>
+      <label class="toggle">
+        <input type="checkbox" id="${key}-${id}" onchange="${fn}">
+        <div class="toggle-track"></div><div class="toggle-thumb"></div>
+      </label>
+    </div>`;
   return `
 <div class="client-card" id="card-${id}">
   <div class="card-header">
@@ -530,41 +552,19 @@ function buildCard(client) {
     <a class="card-link" href="${client.url}/app.html"   target="_blank">Serveur ↗</a>
   </div>
 
-  <div class="section-label">Mode d'affichage</div>
-  <div class="mode-selector">
-    <input type="radio" name="mode-${id}" id="m-${id}-sonet"  value="sonet">
-    <label for="m-${id}-sonet">Sonnette</label>
-    <input type="radio" name="mode-${id}" id="m-${id}-order"  value="order">
-    <label for="m-${id}-order">Commande</label>
-    <input type="radio" name="mode-${id}" id="m-${id}-paper"  value="paper">
-    <label for="m-${id}-paper">Papier</label>
-    <input type="radio" name="mode-${id}" id="m-${id}-simple" value="simple">
-    <label for="m-${id}-simple">Simple</label>
+  <div class="section-label">🎟️ Modes disponibles (licence)</div>
+  <div class="feat-list">
+    ${tog('feat-mode-order',  '🛒 Mode Commande', "writeFeatureMode('"+s+"','order',this.checked)")}
+    ${tog('feat-mode-sonet',  '🔔 Mode Sonnette', "writeFeatureMode('"+s+"','sonet',this.checked)")}
+    ${tog('feat-mode-simple', '🖼️ Mode Photo',    "writeFeatureMode('"+s+"','simple',this.checked)")}
+    ${tog('feat-mode-paper',  '📄 Mode Papier',   "writeFeatureMode('"+s+"','paper',this.checked)")}
   </div>
 
-  <div class="section-label">Options</div>
-  <div class="toggles">
-    <div class="toggle-row">
-      <span class="toggle-label">🔔 Bouton sonnette visible</span>
-      <label class="toggle">
-        <input type="checkbox" id="bell-${id}"   onchange="writeToggle('${s}','showCallBtn',this.checked)">
-        <div class="toggle-track"></div><div class="toggle-thumb"></div>
-      </label>
-    </div>
-    <div class="toggle-row">
-      <span class="toggle-label">🛒 Interface commande visible</span>
-      <label class="toggle">
-        <input type="checkbox" id="order-${id}"  onchange="writeToggle('${s}','showOrderUI',this.checked)">
-        <div class="toggle-track"></div><div class="toggle-thumb"></div>
-      </label>
-    </div>
-    <div class="toggle-row">
-      <span class="toggle-label">🖼️ Photos visibles</span>
-      <label class="toggle">
-        <input type="checkbox" id="photos-${id}" onchange="writeToggle('${s}','showPhotos',this.checked)">
-        <div class="toggle-track"></div><div class="toggle-thumb"></div>
-      </label>
-    </div>
+  <div class="section-label">⚙️ Boutons disponibles (licence)</div>
+  <div class="feat-list">
+    ${tog('feat-btn-callBtn', '🔔 Bouton sonnette',   "writeFeatureBtn('"+s+"','callBtn',this.checked)")}
+    ${tog('feat-btn-orderUI', '🛒 Interface commande',"writeFeatureBtn('"+s+"','orderUI',this.checked)")}
+    ${tog('feat-btn-photos',  '🖼️ Photos produits',   "writeFeatureBtn('"+s+"','photos',this.checked)")}
   </div>
 
   <hr class="divider">
@@ -587,31 +587,21 @@ function initClient(client) {
   const id = s.replace(/-/g, '_');
   const db = getDb(s);
 
-  // Mode (temps réel)
-  db.ref('/menu/menuMode').on('value', snap => {
-    const mode  = snap.val() || 'paper';
-    const radio = document.getElementById(`m-${id}-${mode}`);
-    if (radio) radio.checked = true;
-  });
-
-  // Toggles (temps réel)
-  const toggleMap = {
-    showCallBtn: `bell-${id}`,
-    showOrderUI: `order-${id}`,
-    showPhotos:  `photos-${id}`
-  };
-
-  Object.entries(toggleMap).forEach(([key, elId]) => {
-    db.ref(`/menu/info/${key}`).on('value', snap => {
-      const el = document.getElementById(elId);
-      if (el) el.checked = snap.val() !== false;
+  // Modes disponibles (licence)
+  db.ref('/config/features/modes').on('value', snap => {
+    const modes = snap.val() || {};
+    ['order','sonet','simple','paper'].forEach(mode => {
+      const el = document.getElementById(`feat-mode-${mode}-${id}`);
+      if (el) el.checked = modes[mode] !== false;
     });
   });
 
-  // Attacher mode change
-  document.querySelectorAll(`input[name="mode-${id}"]`).forEach(radio => {
-    radio.addEventListener('change', () => {
-      if (radio.checked) writeMode(s, radio.value);
+  // Boutons disponibles (licence)
+  db.ref('/config/features/buttons').on('value', snap => {
+    const buttons = snap.val() || {};
+    ['callBtn','orderUI','photos'].forEach(btn => {
+      const el = document.getElementById(`feat-btn-${btn}-${id}`);
+      if (el) el.checked = buttons[btn] !== false;
     });
   });
 
@@ -626,12 +616,39 @@ function initClient(client) {
 // FIREBASE WRITES
 // ══════════════════════════════════════════
 
-function writeMode(slug, mode) {
-  getDb(slug).ref('/menu/menuMode').set(mode).catch(console.error);
+const MODE_PRIORITY = ['order','sonet','simple','paper'];
+
+async function writeFeatureMode(slug, mode, enabled) {
+  const db = getDb(slug);
+  await db.ref(`/config/features/modes/${mode}`).set(enabled).catch(console.error);
+
+  if (!enabled) {
+    // Si le mode actif vient d'être désactivé → basculer sur le prochain disponible
+    const snap = await db.ref('/config/features/modes').once('value');
+    const modes = snap.val() || {};
+    const currentSnap = await db.ref('/menu/menuMode').once('value');
+    const current = currentSnap.val() || 'paper';
+    if (current === mode) {
+      const next = MODE_PRIORITY.find(m => m !== mode && modes[m] !== false);
+      if (next) {
+        await db.ref('/menu/menuMode').set(next).catch(console.error);
+      }
+    }
+  }
 }
 
-function writeToggle(slug, key, value) {
-  getDb(slug).ref(`/menu/info/${key}`).set(value).catch(console.error);
+async function writeFeatureBtn(slug, btn, enabled) {
+  const db = getDb(slug);
+  await db.ref(`/config/features/buttons/${btn}`).set(enabled).catch(console.error);
+
+  if (!enabled) {
+    // Forcer la désactivation immédiate dans le menu
+    const keyMap = { callBtn: 'showCallBtn', orderUI: 'showOrderUI', photos: 'showPhotos' };
+    const fireKey = keyMap[btn];
+    if (fireKey) {
+      await db.ref(`/menu/info/${fireKey}`).set(false).catch(console.error);
+    }
+  }
 }
 
 async function updatePassword(slug) {
