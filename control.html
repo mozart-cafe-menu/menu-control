@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu Pro — Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0c0a08;
+      --card-bg:  #13110e;
+      --border:   #2a2318;
+      --gold:     #c8a44e;
+      --gold-dim: rgba(200,164,78,0.14);
+      --text:     #e8e0d0;
+      --muted:    #7a6a4a;
+      --green:    #4caf50;
+      --red:      #ef5350;
+      --r:        12px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ─── LOGIN ─── */
+    #login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+
+    .login-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 3rem 2.5rem;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .login-box h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      color: var(--gold);
+      margin-bottom: 0.25rem;
+    }
+
+    .login-box p {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 2rem;
+    }
+
+    .login-box input[type="password"] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      margin-bottom: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .login-box input[type="password"]:focus { border-color: var(--gold); }
+
+    .btn-gold {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--gold);
+      color: #0c0a08;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-gold:hover { opacity: 0.85; }
+
+    .login-error {
+      color: var(--red);
+      font-size: 0.82rem;
+      margin-top: 0.75rem;
+      display: none;
+    }
+
+    /* ─── DASHBOARD ─── */
+    #dashboard { display: none; }
+
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .hd-left h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      line-height: 1.2;
+    }
+
+    .hd-left span {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .btn-logout {
+      padding: 0.45rem 1.1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover { border-color: var(--gold); color: var(--gold); }
+
+    main {
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .clients-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* ─── CARD ─── */
+    .client-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1.5rem;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .card-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      color: var(--gold);
+      line-height: 1.2;
+    }
+
+    .card-slug {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      margin-top: 5px;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .status-dot.online  { background: var(--green); box-shadow: 0 0 7px var(--green); }
+    .status-dot.offline { background: var(--red); }
+
+    .card-links {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .card-link {
+      padding: 0.3rem 0.7rem;
+      background: var(--gold-dim);
+      border: 1px solid rgba(200,164,78,0.28);
+      border-radius: 6px;
+      color: var(--gold);
+      font-size: 0.75rem;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .card-link:hover { background: rgba(200,164,78,0.24); }
+
+    .section-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.55rem;
+    }
+
+    /* ─── MODE SELECTOR ─── */
+    .mode-selector {
+      display: flex;
+      gap: 0.35rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .mode-selector input[type="radio"] { display: none; }
+
+    .mode-selector label {
+      flex: 1;
+      padding: 0.48rem 0.2rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.76rem;
+      text-align: center;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .mode-selector input[type="radio"]:checked + label {
+      background: var(--gold-dim);
+      border-color: var(--gold);
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    /* ─── TOGGLES ─── */
+    .toggles {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toggle-label { font-size: 0.84rem; }
+
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .toggle input { display: none; }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle input:checked ~ .toggle-track { background: var(--gold); }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      pointer-events: none;
+    }
+
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(20px); }
+
+    /* ─── PASSWORD ─── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.25rem 0;
+    }
+
+    .pw-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .pw-row input[type="password"] {
+      flex: 1;
+      padding: 0.52rem 0.75rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.84rem;
+      outline: none;
+      transition: border-color 0.2s;
+      min-width: 0;
+    }
+
+    .pw-row input[type="password"]:focus { border-color: var(--gold); }
+
+    .btn-update {
+      padding: 0.52rem 0.9rem;
+      background: var(--gold);
+      color: #0c0a08;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+    }
+
+    .btn-update:hover   { opacity: 0.85; }
+    .btn-update:disabled { opacity: 0.45; cursor: default; }
+
+    .pw-feedback {
+      font-size: 0.73rem;
+      margin-top: 0.35rem;
+      min-height: 1em;
+    }
+
+    .pw-feedback.ok  { color: var(--green); }
+    .pw-feedback.err { color: var(--red); }
+
+    @media (max-width: 500px) {
+      main { padding: 1rem; }
+      .clients-grid { grid-template-columns: 1fr; }
+      header { padding: 0.875rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1>Menu Pro</h1>
+    <p>Control — Accès privé</p>
+    <input type="password" id="login-pw" placeholder="Mot de passe" autocomplete="current-password">
+    <button class="btn-gold" onclick="tryLogin()">Connexion</button>
+    <div class="login-error" id="login-error">Mot de passe incorrect</div>
+  </div>
+</div>
+
+<!-- ══════════════ DASHBOARD ══════════════ -->
+<div id="dashboard">
+  <header>
+    <div class="hd-left">
+      <h2>Menu Pro — Control</h2>
+      <span id="clock"></span>
+    </div>
+    <button class="btn-logout" onclick="logout()">Déconnexion</button>
+  </header>
+  <main>
+    <div class="clients-grid" id="clients-grid"></div>
+  </main>
+</div>
+
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIGURATION
+// ══════════════════════════════════════════
+
+const CONTROL_HASH = '1255b264090c1727a6cb91c5797fc62f20ad8378249076fa9351329c321c8067';
+
+const CLIENTS = [
+  {
+    name: 'Mozart Coffee Lounge',
+    slug: 'mozart',
+    url:  'https://mozart-cafe-menu.vercel.app',
+    firebaseConfig: {
+      apiKey:            "AIzaSyAOuYRxE39KDgmizSdqCzAglWrkL4DZXYQ",
+      authDomain:        "mozart-cafe-ae8e0.firebaseapp.com",
+      databaseURL:       "https://mozart-cafe-ae8e0-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId:         "mozart-cafe-ae8e0",
+      storageBucket:     "mozart-cafe-ae8e0.firebasestorage.app",
+      messagingSenderId: "89531105163",
+      appId:             "1:89531105163:web:224863264ff5eebdb9b98e"
+    }
+  },
+  {
+    name: 'Café Élysée',
+    slug: 'cafe-elysee',
+    url:  'https://cafe-elysee-dye1.vercel.app',
+    firebaseConfig: {
+      apiKey:            "AIzaSyCcN6eCTaD_PlTJjO0aKbS1Y3rrDnEwp7s",
+      authDomain:        "cafe-elysee-e186c.firebaseapp.com",
+      databaseURL:       "https://cafe-elysee-e186c-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId:         "cafe-elysee-e186c",
+      storageBucket:     "cafe-elysee-e186c.firebasestorage.app",
+      messagingSenderId: "240164681993",
+      appId:             "1:240164681993:web:13654bfe96f1c83db43bd8"
+    }
+  }
+];
+
+// ══════════════════════════════════════════
+// SHA-256
+// ══════════════════════════════════════════
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ══════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════
+
+async function tryLogin() {
+  const pw   = document.getElementById('login-pw').value;
+  const hash = await sha256(pw);
+  if (hash === CONTROL_HASH) {
+    sessionStorage.setItem('ctrl_auth', '1');
+    showDashboard();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+document.getElementById('login-pw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') tryLogin();
+});
+
+function logout() {
+  sessionStorage.removeItem('ctrl_auth');
+  location.reload();
+}
+
+// ══════════════════════════════════════════
+// CLOCK
+// ══════════════════════════════════════════
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) +
+    ' · ' +
+    now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+// ══════════════════════════════════════════
+// FIREBASE — instances par client
+// ══════════════════════════════════════════
+
+const _dbs = {};
+
+function getDb(slug) {
+  if (!_dbs[slug]) {
+    const client      = CLIENTS.find(c => c.slug === slug);
+    const existing    = firebase.apps.find(a => a.name === slug);
+    const app         = existing || firebase.initializeApp(client.firebaseConfig, slug);
+    _dbs[slug]        = firebase.database(app);
+  }
+  return _dbs[slug];
+}
+
+// ══════════════════════════════════════════
+// STATUS
+// ══════════════════════════════════════════
+
+async function checkStatus(url) {
+  try {
+    await fetch(url, { method: 'HEAD', mode: 'no-cors', cache: 'no-store' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// ══════════════════════════════════════════
+// BUILD CARD HTML
+// ══════════════════════════════════════════
+
+function buildCard(client) {
+  const s  = client.slug;
+  const id = s.replace(/-/g, '_');
+  return `
+<div class="client-card" id="card-${id}">
+  <div class="card-header">
+    <div>
+      <div class="card-name">${client.name}</div>
+      <div class="card-slug">${s}</div>
+    </div>
+    <div class="status-dot" id="status-${id}"></div>
+  </div>
+
+  <div class="card-links">
+    <a class="card-link" href="${client.url}"            target="_blank">Menu ↗</a>
+    <a class="card-link" href="${client.url}/admin.html" target="_blank">Admin ↗</a>
+    <a class="card-link" href="${client.url}/app.html"   target="_blank">Serveur ↗</a>
+  </div>
+
+  <div class="section-label">Mode d'affichage</div>
+  <div class="mode-selector">
+    <input type="radio" name="mode-${id}" id="m-${id}-sonet"  value="sonet">
+    <label for="m-${id}-sonet">Sonnette</label>
+    <input type="radio" name="mode-${id}" id="m-${id}-order"  value="order">
+    <label for="m-${id}-order">Commande</label>
+    <input type="radio" name="mode-${id}" id="m-${id}-paper"  value="paper">
+    <label for="m-${id}-paper">Papier</label>
+    <input type="radio" name="mode-${id}" id="m-${id}-simple" value="simple">
+    <label for="m-${id}-simple">Simple</label>
+  </div>
+
+  <div class="section-label">Options</div>
+  <div class="toggles">
+    <div class="toggle-row">
+      <span class="toggle-label">🔔 Bouton sonnette visible</span>
+      <label class="toggle">
+        <input type="checkbox" id="bell-${id}"   onchange="writeToggle('${s}','showCallBtn',this.checked)">
+        <div class="toggle-track"></div><div class="toggle-thumb"></div>
+      </label>
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-label">🛒 Interface commande visible</span>
+      <label class="toggle">
+        <input type="checkbox" id="order-${id}"  onchange="writeToggle('${s}','showOrderUI',this.checked)">
+        <div class="toggle-track"></div><div class="toggle-thumb"></div>
+      </label>
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-label">🖼️ Photos visibles</span>
+      <label class="toggle">
+        <input type="checkbox" id="photos-${id}" onchange="writeToggle('${s}','showPhotos',this.checked)">
+        <div class="toggle-track"></div><div class="toggle-thumb"></div>
+      </label>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Mot de passe admin</div>
+  <div class="pw-row">
+    <input type="password" id="pw-${id}" placeholder="Nouveau mot de passe">
+    <button class="btn-update" onclick="updatePassword('${s}')">Mettre à jour</button>
+  </div>
+  <div class="pw-feedback" id="pwfb-${id}"></div>
+</div>`;
+}
+
+// ══════════════════════════════════════════
+// INIT LISTENERS PAR CLIENT
+// ══════════════════════════════════════════
+
+function initClient(client) {
+  const s  = client.slug;
+  const id = s.replace(/-/g, '_');
+  const db = getDb(s);
+
+  // Mode (temps réel)
+  db.ref('/menu/menuMode').on('value', snap => {
+    const mode  = snap.val() || 'paper';
+    const radio = document.getElementById(`m-${id}-${mode}`);
+    if (radio) radio.checked = true;
+  });
+
+  // Toggles (temps réel)
+  const toggleMap = {
+    showCallBtn: `bell-${id}`,
+    showOrderUI: `order-${id}`,
+    showPhotos:  `photos-${id}`
+  };
+
+  Object.entries(toggleMap).forEach(([key, elId]) => {
+    db.ref(`/menu/info/${key}`).on('value', snap => {
+      const el = document.getElementById(elId);
+      if (el) el.checked = snap.val() !== false;
+    });
+  });
+
+  // Attacher mode change
+  document.querySelectorAll(`input[name="mode-${id}"]`).forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (radio.checked) writeMode(s, radio.value);
+    });
+  });
+
+  // Statut
+  checkStatus(client.url).then(online => {
+    const dot = document.getElementById(`status-${id}`);
+    if (dot) dot.classList.add(online ? 'online' : 'offline');
+  });
+}
+
+// ══════════════════════════════════════════
+// FIREBASE WRITES
+// ══════════════════════════════════════════
+
+function writeMode(slug, mode) {
+  getDb(slug).ref('/menu/menuMode').set(mode).catch(console.error);
+}
+
+function writeToggle(slug, key, value) {
+  getDb(slug).ref(`/menu/info/${key}`).set(value).catch(console.error);
+}
+
+async function updatePassword(slug) {
+  const id       = slug.replace(/-/g, '_');
+  const input    = document.getElementById(`pw-${id}`);
+  const feedback = document.getElementById(`pwfb-${id}`);
+  const btn      = input.nextElementSibling;
+
+  const pw = input.value.trim();
+  if (!pw) {
+    feedback.textContent = 'Entrez un mot de passe.';
+    feedback.className   = 'pw-feedback err';
+    return;
+  }
+
+  btn.disabled         = true;
+  feedback.textContent = '';
+
+  try {
+    const hash = await sha256(pw);
+    await getDb(slug).ref('/config/adminHash').set(hash);
+    feedback.textContent = '✓ Mis à jour';
+    feedback.className   = 'pw-feedback ok';
+    input.value          = '';
+    setTimeout(() => { feedback.textContent = ''; }, 3000);
+  } catch {
+    feedback.textContent = 'Erreur Firebase';
+    feedback.className   = 'pw-feedback err';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD INIT
+// ══════════════════════════════════════════
+
+function showDashboard() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display    = 'block';
+
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  const grid    = document.getElementById('clients-grid');
+  grid.innerHTML = CLIENTS.map(buildCard).join('');
+  CLIENTS.forEach(initClient);
+}
+
+// ══════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════
+
+if (sessionStorage.getItem('ctrl_auth') === '1') {
+  showDashboard();
+}
+</script>
+</body>
+</html>
