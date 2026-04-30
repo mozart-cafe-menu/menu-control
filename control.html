@@ -641,13 +641,10 @@ async function writeFeatureBtn(slug, btn, enabled) {
   const db = getDb(slug);
   await db.ref(`/config/features/buttons/${btn}`).set(enabled).catch(console.error);
 
-  if (!enabled) {
-    // Forcer la désactivation immédiate dans le menu
-    const keyMap = { callBtn: 'showCallBtn', orderUI: 'showOrderUI', photos: 'showPhotos' };
-    const fireKey = keyMap[btn];
-    if (fireKey) {
-      await db.ref(`/menu/info/${fireKey}`).set(false).catch(console.error);
-    }
+  const keyMap = { callBtn: 'showCallBtn', orderUI: 'showOrderUI', photos: 'showPhotos' };
+  const fireKey = keyMap[btn];
+  if (fireKey) {
+    await db.ref(`/menu/info/${fireKey}`).set(enabled).catch(console.error);
   }
 }
 
