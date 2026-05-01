@@ -1,0 +1,17 @@
+{
+  "name": "Menu Pro — Control",
+  "short_name": "Control",
+  "description": "Panneau de contrôle Menu Pro",
+  "start_url": "/control.html",
+  "display": "standalone",
+  "background_color": "#1a2540",
+  "theme_color": "#1a2540",
+  "icons": [
+    {
+      "src": "/icon-control.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

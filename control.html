@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Menu Pro — Control</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon-control.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#1a2540">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Control">
+  <link rel="apple-touch-icon" href="/icon-control.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -398,6 +405,90 @@
     }
     .lang-sel:focus { border-color: var(--gold); }
 
+    /* ─── LANG TOGGLES ─── */
+    .lang-toggles {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+    }
+    .lang-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .lang-toggle-label { font-size: 0.84rem; }
+
+    /* ─── MODAL ─── */
+    #lang-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    #lang-modal.open { display: flex; }
+    .modal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 2rem 1.75rem;
+      width: 100%;
+      max-width: 380px;
+    }
+    .modal-box h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+    .modal-box p { font-size: 0.85rem; color: var(--text); margin-bottom: 1rem; line-height: 1.5; }
+    .modal-sel {
+      width: 100%;
+      padding: 0.52rem 0.75rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.84rem;
+      outline: none;
+      margin-bottom: 1.25rem;
+      transition: border-color 0.2s;
+    }
+    .modal-sel:focus { border-color: var(--gold); }
+    .modal-actions { display: flex; gap: 0.5rem; }
+    .modal-confirm {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      background: var(--gold);
+      color: #0c0a08;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .modal-confirm:hover { opacity: 0.85; }
+    .modal-cancel {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .modal-cancel:hover { border-color: var(--gold); color: var(--gold); }
+
     @media (max-width: 500px) {
       main { padding: 1rem; }
       .clients-grid { grid-template-columns: 1fr; }
@@ -432,6 +523,19 @@
   </main>
 </div>
 
+<!-- ══════════════ MODAL LANGUE ══════════════ -->
+<div id="lang-modal">
+  <div class="modal-box">
+    <h3>Langue en cours d'utilisation</h3>
+    <p id="modal-msg"></p>
+    <select class="modal-sel" id="modal-sel"></select>
+    <div class="modal-actions">
+      <button class="modal-confirm" onclick="confirmLangDisable()">Confirmer</button>
+      <button class="modal-cancel" onclick="cancelLangDisable()">Annuler</button>
+    </div>
+  </div>
+</div>
+
 <!-- Firebase compat SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -448,7 +552,7 @@ const CLIENTS = [
     name: 'Mozart Coffee Lounge',
     slug: 'mozart',
     url:  'https://mozart-cafe-menu.vercel.app',
-    langs: ['el','fr','en','ar'],
+    langs: ['el','fr','en','ar','de'],
     firebaseConfig: {
       apiKey:            "AIzaSyAOuYRxE39KDgmizSdqCzAglWrkL4DZXYQ",
       authDomain:        "mozart-cafe-ae8e0.firebaseapp.com",
@@ -463,7 +567,7 @@ const CLIENTS = [
     name: 'Café Élysée',
     slug: 'cafe-elysee',
     url:  'https://cafe-elysee-dye1.vercel.app',
-    langs: ['el','fr','en','ar'],
+    langs: ['el','fr','en','ar','de'],
     firebaseConfig: {
       apiKey:            "AIzaSyCcN6eCTaD_PlTJjO0aKbS1Y3rrDnEwp7s",
       authDomain:        "cafe-elysee-e186c.firebaseapp.com",
@@ -476,7 +580,7 @@ const CLIENTS = [
   }
 ];
 
-const LANG_LABELS = { fr: 'Français', en: 'English', ar: 'العربية', el: 'Ελληνικά' };
+const LANG_LABELS = { el: 'Ελληνικά', fr: 'Français', en: 'English', de: 'Deutsch', ar: 'العربية' };
 
 // ══════════════════════════════════════════
 // SHA-256
@@ -602,7 +706,20 @@ function buildCard(client) {
 
   <hr class="divider">
 
-  <div class="section-label">🌐 Langues</div>
+  <div class="section-label">🌐 Langues disponibles</div>
+  <div class="lang-toggles">
+    ${langs.map(l => `
+    <div class="lang-toggle-row">
+      <span class="lang-toggle-label">${LANG_LABELS[l]||l}</span>
+      <label class="toggle">
+        <input type="checkbox" id="lang-en-${l}-${id}" checked
+               onchange="onLangToggle('${s}','${l}',this)">
+        <div class="toggle-track"></div><div class="toggle-thumb"></div>
+      </label>
+    </div>`).join('')}
+  </div>
+
+  <div class="section-label">🌐 Langues — Paramètres</div>
   <div class="lang-section">
     <div class="lang-row">
       <span class="lang-label">Langue affichée (1ère visite)</span>
@@ -623,6 +740,77 @@ function buildCard(client) {
   </div>
   <div class="pw-feedback" id="pwfb-${id}"></div>
 </div>`;
+}
+
+// ══════════════════════════════════════════
+// ÉTAT PAR CLIENT (langues)
+// ══════════════════════════════════════════
+
+const _clientState = {};
+
+function getClientState(slug) {
+  if (!_clientState[slug]) _clientState[slug] = { defaultLang: null, primaryLang: null, enabledLangs: {} };
+  return _clientState[slug];
+}
+
+// ══════════════════════════════════════════
+// TOGGLE LANGUE — avec protection popup
+// ══════════════════════════════════════════
+
+let _pendingDisable = null;
+
+async function onLangToggle(slug, lang, checkbox) {
+  const state = getClientState(slug);
+  const enabled = checkbox.checked;
+
+  if (!enabled) {
+    const client = CLIENTS.find(c => c.slug === slug);
+    const remaining = (client.langs || []).filter(l => l !== lang && state.enabledLangs[l] !== false);
+    if (remaining.length === 0) {
+      checkbox.checked = true;
+      return;
+    }
+
+    const isDefault = state.defaultLang === lang;
+    const isPrimary = state.primaryLang === lang;
+
+    if (isDefault || isPrimary) {
+      _pendingDisable = { slug, lang, checkbox };
+      const roles = [];
+      if (isDefault) roles.push('la langue affichée (1ère visite)');
+      if (isPrimary) roles.push('la langue admin (saisie)');
+      document.getElementById('modal-msg').innerHTML =
+        `<strong>${LANG_LABELS[lang]||lang}</strong> est actuellement ${roles.join(' et ')}.<br>Choisissez une langue de remplacement :`;
+      const sel = document.getElementById('modal-sel');
+      sel.innerHTML = remaining.map(l => `<option value="${l}">${LANG_LABELS[l]||l}</option>`).join('');
+      document.getElementById('lang-modal').classList.add('open');
+      return;
+    }
+  }
+
+  await writeEnabledLang(slug, lang, enabled);
+}
+
+async function confirmLangDisable() {
+  if (!_pendingDisable) return;
+  const { slug, lang } = _pendingDisable;
+  const state = getClientState(slug);
+  const replacement = document.getElementById('modal-sel').value;
+
+  await writeEnabledLang(slug, lang, false);
+  if (state.defaultLang === lang) await writeDefaultLang(slug, replacement);
+  if (state.primaryLang === lang) await writePrimaryLang(slug, replacement);
+
+  document.getElementById('lang-modal').classList.remove('open');
+  _pendingDisable = null;
+}
+
+function cancelLangDisable() {
+  if (_pendingDisable) {
+    _pendingDisable.checkbox.checked = true;
+    _pendingDisable = null;
+  }
+  document.getElementById('lang-modal').classList.remove('open');
 }
 
 // ══════════════════════════════════════════
@@ -655,15 +843,27 @@ function initClient(client) {
   // Langue par défaut (menu visiteur)
   db.ref('/config/defaultLang').on('value', snap => {
     const val = snap.val();
-    const el  = document.getElementById(`default-lang-${id}`);
+    getClientState(s).defaultLang = val;
+    const el = document.getElementById(`default-lang-${id}`);
     if (el && val) el.value = val;
   });
 
   // Langue principale (saisie admin)
   db.ref('/config/primaryLang').on('value', snap => {
     const val = snap.val();
-    const el  = document.getElementById(`primary-lang-${id}`);
+    getClientState(s).primaryLang = val;
+    const el = document.getElementById(`primary-lang-${id}`);
     if (el && val) el.value = val;
+  });
+
+  // Langues disponibles (toggles)
+  db.ref('/config/enabledLangs').on('value', snap => {
+    const enabledLangs = snap.val() || {};
+    getClientState(s).enabledLangs = enabledLangs;
+    (client.langs || []).forEach(l => {
+      const el = document.getElementById(`lang-en-${l}-${id}`);
+      if (el) el.checked = enabledLangs[l] !== false;
+    });
   });
 
   // Statut
@@ -715,6 +915,10 @@ async function writeDefaultLang(slug, lang) {
 
 async function writePrimaryLang(slug, lang) {
   await getDb(slug).ref('/config/primaryLang').set(lang).catch(console.error);
+}
+
+async function writeEnabledLang(slug, lang, enabled) {
+  await getDb(slug).ref(`/config/enabledLangs/${lang}`).set(enabled).catch(console.error);
 }
 
 async function updatePassword(slug) {
