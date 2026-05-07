@@ -721,8 +721,8 @@ function buildCard(client) {
   <div class="card-body">
     <div class="section-label">🎨 Styles disponibles (licence)</div>
     <div class="feat-list">
-      ${tog('feat-mode-paper',  '📄 Style Papier',  "writeFeatureMode('"+s+"','paper',this.checked)")}
-      ${tog('feat-mode-simple', '🖼️ Style Photo',   "writeFeatureMode('"+s+"','simple',this.checked)")}
+      ${tog('feat-style-paper',  '📄 Style Papier',  "writeFeatureStyle('"+s+"','paper',this.checked)")}
+      ${tog('feat-style-simple', '🖼️ Style Photo',   "writeFeatureStyle('"+s+"','simple',this.checked)")}
     </div>
 
     <div class="section-label">⚙️ Boutons disponibles (licence)</div>
@@ -868,11 +868,11 @@ function initClient(client) {
   const db = getDb(s);
 
   // Styles disponibles (licence)
-  db.ref('/config/features/modes').on('value', snap => {
-    const modes = snap.val() || {};
-    ['simple','paper'].forEach(mode => {
-      const el = document.getElementById(`feat-mode-${mode}-${id}`);
-      if (el) el.checked = modes[mode] !== false;
+  db.ref('/config/features/styles').on('value', snap => {
+    const styles = snap.val() || {};
+    ['simple','paper'].forEach(style => {
+      const el = document.getElementById(`feat-style-${style}-${id}`);
+      if (el) el.checked = styles[style] !== false;
     });
   });
 
@@ -922,22 +922,22 @@ function initClient(client) {
 // FIREBASE WRITES
 // ══════════════════════════════════════════
 
-const MODE_PRIORITY = ['paper','simple'];
+const STYLE_PRIORITY = ['paper','simple'];
 
-async function writeFeatureMode(slug, mode, enabled) {
+async function writeFeatureStyle(slug, style, enabled) {
   const db = getDb(slug);
-  await db.ref(`/config/features/modes/${mode}`).set(enabled).catch(console.error);
+  await db.ref(`/config/features/styles/${style}`).set(enabled).catch(console.error);
 
   if (!enabled) {
     // Si le style actif vient d'être désactivé → basculer sur le prochain disponible
-    const snap = await db.ref('/config/features/modes').once('value');
-    const modes = snap.val() || {};
-    const currentSnap = await db.ref('/menu/menuMode').once('value');
+    const snap = await db.ref('/config/features/styles').once('value');
+    const styles = snap.val() || {};
+    const currentSnap = await db.ref('/menu/menuStyle').once('value');
     const current = currentSnap.val() || 'paper';
-    if (current === mode) {
-      const next = MODE_PRIORITY.find(m => m !== mode && modes[m] !== false);
+    if (current === style) {
+      const next = STYLE_PRIORITY.find(s => s !== style && styles[s] !== false);
       if (next) {
-        await db.ref('/menu/menuMode').set(next).catch(console.error);
+        await db.ref('/menu/menuStyle').set(next).catch(console.error);
       }
     }
   }
