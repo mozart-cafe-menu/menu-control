@@ -570,23 +570,6 @@
     .variant-name { font-size: 0.84rem; color: var(--text); }
 
     /* ─── DEMO PHOTOS ─── */
-    .dp-section {
-      background: var(--card-bg); border: 1px solid var(--border);
-      border-radius: var(--r); margin-bottom: 1.5rem; overflow: hidden;
-    }
-    .dp-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 1.5rem; cursor: pointer; user-select: none;
-      transition: background 0.2s;
-    }
-    .dp-header:hover { background: rgba(200,164,78,0.05); }
-    .dp-header h3 {
-      font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--gold);
-    }
-    .dp-chevron { transition: transform 0.25s; flex-shrink: 0; }
-    .dp-section.open .dp-chevron { transform: rotate(180deg); }
-    .dp-body { padding: 0 1.5rem 1.5rem; display: none; }
-    .dp-section.open .dp-body { display: block; }
     .dp-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;
     }
@@ -648,19 +631,6 @@
     <button class="btn-logout" onclick="logout()">Déconnexion</button>
   </header>
   <main>
-
-    <!-- ── Photos page Démo ── -->
-    <div class="dp-section" id="dp-section">
-      <div class="dp-header" onclick="toggleDpSection()">
-        <h3>📷 Photos de l'accueil — <a href="https://menu-pro-demo.vercel.app/" target="_blank" onclick="event.stopPropagation()" style="color:var(--gold);text-decoration:none;">Page Démo ↗</a></h3>
-        <svg class="dp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-      <div class="dp-body">
-        <p style="font-size:0.81rem;color:var(--muted);margin-bottom:1.2rem;">Upload les 5 photos du carrousel depuis ton appareil. Laisser vide = fond sombre par défaut. Les changements s'affichent immédiatement sur la <a href="https://menu-pro-demo.vercel.app/" target="_blank" style="color:var(--gold);">page Démo</a>.</p>
-        <div class="dp-grid" id="dp-grid"></div>
-        <span class="dp-ok" id="dp-ok">✓ Photo enregistrée</span>
-      </div>
-    </div>
 
     <div class="clients-grid" id="clients-grid"></div>
   </main>
@@ -1491,9 +1461,6 @@ const DP_SLIDES = 5;
 const DP_CLOUD  = 'dowi189l9';
 const DP_PRESET = 'menu_photos';
 
-function toggleDpSection() {
-  document.getElementById('dp-section').classList.toggle('open');
-}
 
 function dpSetImg(i, url) {
   const img = document.getElementById('dp-img-' + i);
@@ -1601,7 +1568,23 @@ function showDashboard() {
   initDemoPhotos();
 
   const grid    = document.getElementById('clients-grid');
-  grid.innerHTML = CLIENTS.map(buildCard).join('');
+  const chevron = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+  const demoCard = `
+<div class="client-card collapsed" id="card-demo_page">
+  <div class="card-top">
+    <div class="card-name">Page Demo</div>
+    <button class="card-collapse-btn" onclick="toggleCard('demo_page')" title="Réduire / Développer">${chevron}</button>
+  </div>
+  <div class="card-links">
+    <a class="card-link" href="https://menu-pro-demo.vercel.app/" target="_blank">Demo ↗</a>
+  </div>
+  <div class="card-body">
+    <p style="font-size:0.81rem;color:var(--muted);margin-bottom:1.2rem;">Upload les 5 photos du carrousel depuis ton appareil. Laisser vide = fond sombre par défaut. Les changements s'affichent immédiatement sur la <a href="https://menu-pro-demo.vercel.app/" target="_blank" style="color:var(--gold);">page Démo</a>.</p>
+    <div class="dp-grid" id="dp-grid"></div>
+    <span class="dp-ok" id="dp-ok">✓ Photo enregistrée</span>
+  </div>
+</div>`;
+  grid.innerHTML = demoCard + CLIENTS.map(buildCard).join('');
   CLIENTS.forEach(initClient);
 }
 
