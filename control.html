@@ -1534,10 +1534,18 @@ function dpUpload(i) {
           const json = await res.json();
           if (!res.ok) throw new Error(json.error?.message || 'Upload échoué');
           dpSetImg(i, json.secure_url);
-          getDb('cafe-elysee').ref('demoPage/heroSlides/' + i).set(json.secure_url);
           const ok = document.getElementById('dp-ok');
+          try {
+            await getDb('cafe-elysee').ref('demoPage/heroSlides/' + i).set(json.secure_url);
+            ok.textContent = '✓ Photo enregistrée';
+            ok.style.color = 'var(--green)';
+          } catch(fbErr) {
+            console.error('Firebase write error', fbErr);
+            ok.textContent = '⚠ Erreur Firebase : ' + fbErr.message;
+            ok.style.color = 'var(--red)';
+          }
           ok.style.display = 'block';
-          setTimeout(() => ok.style.display = 'none', 2500);
+          setTimeout(() => { ok.style.display = 'none'; ok.textContent = '✓ Photo enregistrée'; ok.style.color = 'var(--green)'; }, 4000);
         } catch(err) {
           console.error('dp upload error', err);
           dpSetImg(i, '');
