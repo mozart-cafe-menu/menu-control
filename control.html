@@ -464,6 +464,43 @@
     }
     .client-card.collapsed .card-body { max-height: 0; opacity: 0; }
 
+    /* ─── RETENTION ─── */
+    .retention-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 0; border-bottom: 1px solid rgba(200,164,78,0.07);
+    }
+    .retention-row:last-child { border-bottom: none; }
+    .retention-label { font-size: 0.78rem; color: var(--muted); }
+    .retention-sel {
+      background: var(--bg2); border: 1px solid var(--bord);
+      border-radius: 8px; color: var(--cream); font-size: 0.74rem;
+      padding: 5px 8px; cursor: pointer; font-family: inherit;
+      appearance: none; -webkit-appearance: none;
+    }
+    .retention-sel:focus { outline: none; border-color: var(--gold); }
+
+    /* ─── CONFIRM RETENTION MODAL ─── */
+    #retention-modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
+      z-index: 300; align-items: center; justify-content: center; padding: 1.5rem;
+    }
+    #retention-modal.open { display: flex; }
+    .ret-modal-box {
+      background: var(--card-bg); border: 1px solid rgba(200,164,78,0.3);
+      border-radius: 16px; padding: 28px 24px; max-width: 400px; width: 100%;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .ret-modal-icon { font-size: 1.8rem; text-align: center; }
+    .ret-modal-title { font-size: 0.95rem; font-weight: 600; color: var(--cream); text-align: center; }
+    .ret-modal-body { font-size: 0.8rem; color: var(--muted); line-height: 1.65; text-align: center; }
+    .ret-modal-body strong { color: var(--cream); }
+    .ret-modal-body .warn { color: #e8a44a; }
+    .ret-modal-btns { display: flex; gap: 10px; margin-top: 4px; }
+    .ret-modal-btns button { flex: 1; padding: 10px; border-radius: 10px; font-family: inherit; font-size: 0.82rem; font-weight: 500; cursor: pointer; }
+    .ret-btn-cancel { background: transparent; border: 1px solid var(--bord); color: var(--muted); }
+    .ret-btn-ok { background: var(--gold); border: none; color: #000; }
+
     /* ─── MODAL ─── */
     #lang-modal {
       display: none;
@@ -637,6 +674,19 @@
 </div>
 
 <!-- ══════════════ MODAL LANGUE ══════════════ -->
+<!-- MODAL CONFIRMATION RÉTENTION -->
+<div id="retention-modal">
+  <div class="ret-modal-box">
+    <div class="ret-modal-icon">⚠️</div>
+    <div class="ret-modal-title" id="ret-modal-title"></div>
+    <div class="ret-modal-body" id="ret-modal-body"></div>
+    <div class="ret-modal-btns">
+      <button class="ret-btn-cancel" onclick="cancelRetention()">Annuler</button>
+      <button class="ret-btn-ok" onclick="confirmRetention()">Confirmer</button>
+    </div>
+  </div>
+</div>
+
 <div id="lang-modal">
   <div class="modal-box">
     <h3>Langue en cours d'utilisation</h3>
@@ -799,6 +849,78 @@ async function checkStatus(url) {
 }
 
 // ══════════════════════════════════════════
+// ══════════════════════════════════════════
+// RETENTION — OPTIONS & HELPERS
+// ══════════════════════════════════════════
+
+const RETENTION_OPTS = [
+  { ms: 86400000,    label: '24 heures' },
+  { ms: 172800000,   label: '48 heures' },
+  { ms: 259200000,   label: '72 heures' },
+  { ms: 604800000,   label: '1 semaine' },
+  { ms: 1209600000,  label: '2 semaines' },
+  { ms: 1814400000,  label: '3 semaines' },
+  { ms: 2592000000,  label: '1 mois' },
+  { ms: 5184000000,  label: '2 mois' },
+  { ms: 7776000000,  label: '3 mois' },
+  { ms: 15552000000, label: '6 mois' },
+];
+
+function retentionOptions() {
+  return RETENTION_OPTS.map(o =>
+    `<option value="${o.ms}">${o.label}</option>`
+  ).join('');
+}
+
+let _pendingRetention = null;
+
+function writeRetention(slug, type, selectEl) {
+  const newMs  = parseInt(selectEl.value);
+  const db     = getDb(slug);
+  const label  = type === 'calls' ? 'des appels' : 'des commandes';
+  const newLbl = RETENTION_OPTS.find(o => o.ms === newMs)?.label || '?';
+
+  db.ref(`/config/retention/${type}`).once('value').then(snap => {
+    const currentMs  = snap.val() || 604800000;
+    const currentLbl = RETENTION_OPTS.find(o => o.ms === currentMs)?.label || '?';
+    const isReduction = newMs < currentMs;
+
+    _pendingRetention = { slug, type, newMs, prevMs: currentMs, el: selectEl };
+
+    document.getElementById('ret-modal-title').textContent =
+      `Modifier la rétention ${label}`;
+
+    let body = `Durée actuelle\u00a0: <strong>${currentLbl}</strong><br>Nouvelle durée\u00a0: <strong>${newLbl}</strong>`;
+    if (isReduction) {
+      body += `<br><br><span class="warn">⚠️ Les données au-delà de <strong>${newLbl}</strong> seront <strong>cachées immédiatement</strong> et supprimées définitivement de Firebase <strong>1 semaine après</strong> cette validation.</span>`;
+    }
+    document.getElementById('ret-modal-body').innerHTML = body;
+    document.getElementById('retention-modal').classList.add('open');
+  });
+}
+
+function cancelRetention() {
+  if (_pendingRetention) {
+    _pendingRetention.el.value = _pendingRetention.prevMs;
+    _pendingRetention = null;
+  }
+  document.getElementById('retention-modal').classList.remove('open');
+}
+
+async function confirmRetention() {
+  if (!_pendingRetention) return;
+  const { slug, type, newMs, prevMs } = _pendingRetention;
+  const isReduction = newMs < prevMs;
+  await getDb(slug).ref('/config/retention').update({
+    [type]:                    newMs,
+    [`${type}ChangedAt`]:      Date.now(),
+    [`${type}Previous`]:       prevMs,
+    [`${type}IsReduction`]:    isReduction,
+  }).catch(console.error);
+  _pendingRetention = null;
+  document.getElementById('retention-modal').classList.remove('open');
+}
+
 // BUILD CARD HTML
 // ══════════════════════════════════════════
 
@@ -885,6 +1007,22 @@ function buildCard(client) {
       <button class="btn-update" onclick="updatePassword('${s}')">Mettre à jour</button>
     </div>
     <div class="pw-feedback" id="pwfb-${id}"></div>
+
+    <hr class="divider">
+
+    <div class="section-label">🗑️ Historique — Suppression automatique</div>
+    <div class="retention-row">
+      <span class="retention-label">🔔 Appels (serveur)</span>
+      <select class="retention-sel" id="ret-calls-${id}" onchange="writeRetention('${s}','calls',this)">
+        ${retentionOptions()}
+      </select>
+    </div>
+    <div class="retention-row">
+      <span class="retention-label">🛒 Commandes</span>
+      <select class="retention-sel" id="ret-orders-${id}" onchange="writeRetention('${s}','orders',this)">
+        ${retentionOptions()}
+      </select>
+    </div>
   </div>
 </div>`;
 }
@@ -1326,6 +1464,15 @@ function initClient(client) {
     const val = snap.val() || '';
     const el = document.getElementById(`event-sel-${id}`);
     if (el) el.value = val;
+  });
+
+  // Rétention historique
+  db.ref('/config/retention').on('value', snap => {
+    const r = snap.val() || {};
+    const callsSel  = document.getElementById(`ret-calls-${id}`);
+    const ordersSel = document.getElementById(`ret-orders-${id}`);
+    if (callsSel)  callsSel.value  = r.calls  || 604800000;
+    if (ordersSel) ordersSel.value = r.orders || 604800000;
   });
 
   // Statut
