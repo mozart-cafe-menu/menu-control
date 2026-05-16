@@ -195,15 +195,17 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-left: 3px solid rgba(200,164,78,0.3);
+      border-right: 3px solid rgba(200,164,78,0.3);
       border-radius: var(--r);
       padding: 1.5rem;
       box-shadow: 0 2px 12px rgba(0,0,0,0.25);
-      transition: border-left-color 0.3s, box-shadow 0.3s, transform 0.2s;
+      transition: border-left-color 0.3s, border-right-color 0.3s, box-shadow 0.3s, transform 0.2s;
       scroll-margin-top: 5rem;
     }
 
     .client-card:hover {
       border-left-color: var(--gold);
+      border-right-color: var(--gold);
       box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(200,164,78,0.07);
       transform: translateY(-1px);
     }
@@ -700,14 +702,16 @@
     /* ─── FLOATING NAV ─── */
     #ctrl-nav-btn {
       position: fixed; bottom: 1.75rem; right: 1.75rem; z-index: 100;
-      width: 52px; height: 52px;
-      background: linear-gradient(135deg, #d4a94e, #a87830);
-      border: none; border-radius: 50%; cursor: pointer;
+      width: 48px; height: 48px;
+      background: rgba(200,164,78,0.1);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(200,164,78,0.3); border-radius: 50%; cursor: pointer;
       display: none; align-items: center; justify-content: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(200,164,78,0.3);
-      transition: transform 0.2s, box-shadow 0.2s; color: #0c0a08;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s, border-color 0.2s;
+      color: var(--gold);
     }
-    #ctrl-nav-btn:hover { transform: scale(1.08); box-shadow: 0 8px 28px rgba(0,0,0,0.6), 0 0 0 1px rgba(200,164,78,0.5); }
+    #ctrl-nav-btn:hover { transform: scale(1.08); background: rgba(200,164,78,0.18); border-color: rgba(200,164,78,0.55); box-shadow: 0 6px 24px rgba(0,0,0,0.5); }
     #ctrl-nav-btn svg { display: block; }
 
     #ctrl-nav-overlay { position: fixed; inset: 0; z-index: 98; display: none; }
