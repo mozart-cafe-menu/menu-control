@@ -652,11 +652,11 @@
     <!-- ── Photos page Démo ── -->
     <div class="dp-section" id="dp-section">
       <div class="dp-header" onclick="toggleDpSection()">
-        <h3>📷 Photos de l'accueil — Page Démo</h3>
+        <h3>📷 Photos de l'accueil — <a href="https://menu-pro-demo.vercel.app/" target="_blank" onclick="event.stopPropagation()" style="color:var(--gold);text-decoration:none;">Page Démo ↗</a></h3>
         <svg class="dp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="dp-body">
-        <p style="font-size:0.81rem;color:var(--muted);margin-bottom:1.2rem;">Collez l'URL directe de chaque photo (Cloudinary, Unsplash, etc.). Laisser vide = fond sombre par défaut.</p>
+        <p style="font-size:0.81rem;color:var(--muted);margin-bottom:1.2rem;">Upload les 5 photos du carrousel depuis ton appareil. Laisser vide = fond sombre par défaut. Les changements s'affichent immédiatement sur la <a href="https://menu-pro-demo.vercel.app/" target="_blank" style="color:var(--gold);">page Démo</a>.</p>
         <div class="dp-grid" id="dp-grid"></div>
         <span class="dp-ok" id="dp-ok">✓ Photo enregistrée</span>
       </div>
