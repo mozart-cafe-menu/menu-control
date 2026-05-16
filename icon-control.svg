@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Fond rond bleu foncé -->
+  <rect width="512" height="512" rx="112" fill="#1a2540"/>
+
+  <!-- Icône sliders / control panel (3 curseurs horizontaux) -->
+  <!-- Ligne 1 -->
+  <line x1="96" y1="160" x2="416" y2="160" stroke="#4a7fcb" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="200" cy="160" r="30" fill="#ffffff" stroke="#4a7fcb" stroke-width="10"/>
+
+  <!-- Ligne 2 -->
+  <line x1="96" y1="256" x2="416" y2="256" stroke="#4a7fcb" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="310" cy="256" r="30" fill="#ffffff" stroke="#4a7fcb" stroke-width="10"/>
+
+  <!-- Ligne 3 -->
+  <line x1="96" y1="352" x2="416" y2="352" stroke="#4a7fcb" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="170" cy="352" r="30" fill="#ffffff" stroke="#4a7fcb" stroke-width="10"/>
+</svg>

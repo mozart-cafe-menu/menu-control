@@ -1,0 +1,1617 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu Pro — Control</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon-control.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#1a2540">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Control">
+  <link rel="apple-touch-icon" href="/icon-control.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0c0a08;
+      --card-bg:  #13110e;
+      --border:   #2a2318;
+      --gold:     #c8a44e;
+      --gold-dim: rgba(200,164,78,0.14);
+      --text:     #e8e0d0;
+      --muted:    #7a6a4a;
+      --green:    #4caf50;
+      --red:      #ef5350;
+      --r:        12px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ─── LOGIN ─── */
+    #login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+
+    .login-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 3rem 2.5rem;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .login-box h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      color: var(--gold);
+      margin-bottom: 0.25rem;
+    }
+
+    .login-box p {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 2rem;
+    }
+
+    .login-box input[type="password"] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      margin-bottom: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .login-box input[type="password"]:focus { border-color: var(--gold); }
+
+    .btn-gold {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--gold);
+      color: #0c0a08;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-gold:hover { opacity: 0.85; }
+
+    .login-error {
+      color: var(--red);
+      font-size: 0.82rem;
+      margin-top: 0.75rem;
+      display: none;
+    }
+
+    /* ─── DASHBOARD ─── */
+    #dashboard { display: none; }
+
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .hd-left h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      line-height: 1.2;
+    }
+
+    .hd-left span {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .btn-logout {
+      padding: 0.45rem 1.1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover { border-color: var(--gold); color: var(--gold); }
+
+    main {
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .clients-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* ─── CARD ─── */
+    .client-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1.5rem;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .card-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      color: var(--gold);
+      line-height: 1.2;
+    }
+
+    .card-slug {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      margin-top: 5px;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .status-dot.online  { background: var(--green); box-shadow: 0 0 7px var(--green); }
+    .status-dot.offline { background: var(--red); }
+
+    .card-links {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .card-link {
+      padding: 0.3rem 0.7rem;
+      background: var(--gold-dim);
+      border: 1px solid rgba(200,164,78,0.28);
+      border-radius: 6px;
+      color: var(--gold);
+      font-size: 0.75rem;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .card-link:hover { background: rgba(200,164,78,0.24); }
+
+    .section-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.55rem;
+    }
+
+    /* ─── MODE SELECTOR ─── */
+    .mode-selector {
+      display: flex;
+      gap: 0.35rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .mode-selector input[type="radio"] { display: none; }
+
+    .mode-selector label {
+      flex: 1;
+      padding: 0.48rem 0.2rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.76rem;
+      text-align: center;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .mode-selector input[type="radio"]:checked + label {
+      background: var(--gold-dim);
+      border-color: var(--gold);
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    /* ─── TOGGLES ─── */
+    .toggles {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toggle-label { font-size: 0.84rem; }
+
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .toggle input { display: none; }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle input:checked ~ .toggle-track { background: var(--gold); }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      pointer-events: none;
+    }
+
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(20px); }
+
+    /* ─── FEAT LIST (licences) ─── */
+    .feat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-bottom: 1.25rem;
+    }
+    .feat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .feat-label { font-size: 0.84rem; }
+
+    /* ─── PASSWORD ─── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.25rem 0;
+    }
+
+    .pw-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .pw-row input[type="password"] {
+      flex: 1;
+      padding: 0.52rem 0.75rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.84rem;
+      outline: none;
+      transition: border-color 0.2s;
+      min-width: 0;
+    }
+
+    .pw-row input[type="password"]:focus { border-color: var(--gold); }
+
+    .btn-update {
+      padding: 0.52rem 0.9rem;
+      background: var(--gold);
+      color: #0c0a08;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+    }
+
+    .btn-update:hover   { opacity: 0.85; }
+    .btn-update:disabled { opacity: 0.45; cursor: default; }
+
+    .pw-feedback {
+      font-size: 0.73rem;
+      margin-top: 0.35rem;
+      min-height: 1em;
+    }
+
+    .pw-feedback.ok  { color: var(--green); }
+    .pw-feedback.err { color: var(--red); }
+
+    /* ─── LANGUAGES ─── */
+    .lang-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-bottom: 1.25rem;
+    }
+    .lang-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .lang-label { font-size: 0.84rem; }
+    .lang-sel {
+      padding: 0.3rem 0.6rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.78rem;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .lang-sel:focus { border-color: var(--gold); }
+
+    /* ─── EVENT SELECT ─── */
+    .event-select-row { margin-bottom: 1rem; }
+    .event-sel {
+      width: 100%;
+      padding: 0.45rem 0.7rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .event-sel:focus { border-color: var(--gold); }
+
+    /* ─── LANG TOGGLES ─── */
+    .lang-toggles {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+    }
+    .lang-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .lang-toggle-label { font-size: 0.84rem; }
+
+    /* ─── COLLAPSIBLE CARD ─── */
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .card-collapse-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: color 0.2s;
+      flex-shrink: 0;
+    }
+    .card-collapse-btn:hover { color: var(--gold); }
+    .card-collapse-btn svg { transition: transform 0.25s ease; display: block; }
+    .client-card.collapsed .card-collapse-btn svg { transform: rotate(-90deg); }
+    .card-body {
+      overflow: hidden;
+      max-height: 2000px;
+      opacity: 1;
+      transition: max-height 0.35s ease, opacity 0.25s ease;
+    }
+    .client-card.collapsed .card-body { max-height: 0; opacity: 0; }
+
+    /* ─── MODAL ─── */
+    #lang-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    #lang-modal.open { display: flex; }
+    #theme-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    #theme-modal.open { display: flex; }
+    .modal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 2rem 1.75rem;
+      width: 100%;
+      max-width: 380px;
+    }
+    .modal-box h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+    .modal-box p { font-size: 0.85rem; color: var(--text); margin-bottom: 1rem; line-height: 1.5; }
+    .modal-sel {
+      width: 100%;
+      padding: 0.52rem 0.75rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.84rem;
+      outline: none;
+      margin-bottom: 1.25rem;
+      transition: border-color 0.2s;
+    }
+    .modal-sel:focus { border-color: var(--gold); }
+    .modal-actions { display: flex; gap: 0.5rem; }
+    .modal-confirm {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      background: var(--gold);
+      color: #0c0a08;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .modal-confirm:hover { opacity: 0.85; }
+    .modal-cancel {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .modal-cancel:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ─── VARIANTES PAR THÈME ─── */
+    .variant-btn {
+      background: none; border: 1px solid var(--border); border-radius: 6px;
+      color: var(--muted); cursor: pointer; font-size: 0.75rem;
+      padding: 2px 8px; margin-left: 6px; flex-shrink: 0;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .variant-btn:hover { border-color: var(--gold); color: var(--gold); }
+    #variant-modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.72); z-index: 200;
+      align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    #variant-modal.open { display: flex; }
+    .variant-modal-box {
+      max-height: 82vh; overflow-y: auto;
+    }
+    .variant-list { display: flex; flex-direction: column; gap: 10px; margin: 0.5rem 0 1rem; }
+    .variant-item { display: flex; align-items: center; gap: 10px; }
+    .variant-cb { width: 16px; height: 16px; accent-color: var(--gold); cursor: pointer; flex-shrink: 0; }
+    .variant-dot { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.15); }
+    .variant-name { font-size: 0.84rem; color: var(--text); }
+
+    /* ─── DEMO PHOTOS ─── */
+    .dp-section {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--r); margin-bottom: 1.5rem; overflow: hidden;
+    }
+    .dp-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem; cursor: pointer; user-select: none;
+      transition: background 0.2s;
+    }
+    .dp-header:hover { background: rgba(200,164,78,0.05); }
+    .dp-header h3 {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--gold);
+    }
+    .dp-chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .dp-section.open .dp-chevron { transform: rotate(180deg); }
+    .dp-body { padding: 0 1.5rem 1.5rem; display: none; }
+    .dp-section.open .dp-body { display: block; }
+    .dp-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;
+    }
+    .dp-item { display: flex; flex-direction: column; gap: 0.45rem; }
+    .dp-num { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    .dp-preview {
+      width: 100%; height: 80px; background: var(--bg); border: 1px dashed var(--border);
+      border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center;
+    }
+    .dp-preview img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .dp-cam { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--muted); }
+    .dp-cam svg { width: 26px; height: 26px; opacity: 0.35; }
+    .dp-cam span { font-size: 0.62rem; letter-spacing: 0.05em; text-transform: uppercase; }
+    .dp-btns { display: flex; gap: 0.4rem; }
+    .dp-upload-btn {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+      padding: 0.45rem 0.6rem; background: var(--gold-dim); border: 1px solid rgba(200,164,78,0.28);
+      border-radius: 6px; color: var(--gold); font-family: 'Outfit', sans-serif;
+      font-size: 0.76rem; font-weight: 500; cursor: pointer; transition: background 0.2s;
+      white-space: nowrap; user-select: none;
+    }
+    .dp-upload-btn:hover { background: rgba(200,164,78,0.22); }
+    .dp-del-btn {
+      padding: 0.45rem 0.6rem; background: transparent; border: 1px solid var(--border);
+      border-radius: 6px; color: var(--muted); font-size: 0.78rem; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s; flex-shrink: 0;
+    }
+    .dp-del-btn:hover { border-color: var(--red); color: var(--red); }
+    .dp-spin { font-size: 0.75rem; color: var(--muted); text-align: center; padding: 0.3rem 0; display: none; }
+    .dp-ok { font-size: 0.8rem; color: var(--green); display: none; margin-top: 0.75rem; }
+
+    @media (max-width: 500px) {
+      main { padding: 1rem; }
+      .clients-grid { grid-template-columns: 1fr; }
+      header { padding: 0.875rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1>Menu Pro</h1>
+    <p>Control — Accès privé</p>
+    <input type="password" id="login-pw" placeholder="Mot de passe" autocomplete="current-password">
+    <button class="btn-gold" onclick="tryLogin()">Connexion</button>
+    <div class="login-error" id="login-error">Mot de passe incorrect</div>
+  </div>
+</div>
+
+<!-- ══════════════ DASHBOARD ══════════════ -->
+<div id="dashboard">
+  <header>
+    <div class="hd-left">
+      <h2>Menu Pro — Control</h2>
+      <span id="clock"></span>
+    </div>
+    <button class="btn-logout" onclick="logout()">Déconnexion</button>
+  </header>
+  <main>
+
+    <!-- ── Photos page Démo ── -->
+    <div class="dp-section" id="dp-section">
+      <div class="dp-header" onclick="toggleDpSection()">
+        <h3>📷 Photos de l'accueil — Page Démo</h3>
+        <svg class="dp-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="dp-body">
+        <p style="font-size:0.81rem;color:var(--muted);margin-bottom:1.2rem;">Collez l'URL directe de chaque photo (Cloudinary, Unsplash, etc.). Laisser vide = fond sombre par défaut.</p>
+        <div class="dp-grid" id="dp-grid"></div>
+        <span class="dp-ok" id="dp-ok">✓ Photo enregistrée</span>
+      </div>
+    </div>
+
+    <div class="clients-grid" id="clients-grid"></div>
+  </main>
+</div>
+
+<!-- ══════════════ MODAL LANGUE ══════════════ -->
+<div id="lang-modal">
+  <div class="modal-box">
+    <h3>Langue en cours d'utilisation</h3>
+    <p id="modal-msg"></p>
+    <select class="modal-sel" id="modal-sel"></select>
+    <div class="modal-actions">
+      <button class="modal-confirm" onclick="confirmLangDisable()">Confirmer</button>
+      <button class="modal-cancel" onclick="cancelLangDisable()">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL THÈME ══════════════ -->
+<div id="theme-modal">
+  <div class="modal-box">
+    <h3>Thème en cours d'utilisation</h3>
+    <p id="theme-modal-msg" style="font-size:0.85rem; color:var(--text); margin-bottom:1rem;"></p>
+    <select class="modal-sel" id="theme-modal-sel"></select>
+    <div class="modal-actions">
+      <button class="modal-confirm" onclick="confirmThemeDisable()">Confirmer</button>
+      <button class="modal-cancel" onclick="cancelThemeDisable()">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL VARIANTES ══════════════ -->
+<div id="variant-modal">
+  <div class="modal-box variant-modal-box">
+    <h3 id="variant-modal-title">Variantes</h3>
+    <div class="section-label" style="margin:0.25rem 0 0.25rem;font-size:0.62rem">Couleurs visibles</div>
+    <div id="variant-list" class="variant-list"></div>
+    <div class="section-label" style="margin:0 0 0.4rem;font-size:0.62rem">Couleur par défaut</div>
+    <select class="modal-sel" id="variant-default-sel" onchange="onVariantDefaultChange()" style="margin-bottom:1rem"></select>
+    <div class="modal-actions">
+      <button class="modal-confirm" onclick="saveVariantConfig()">Enregistrer</button>
+      <button class="modal-cancel" onclick="closeVariantModal()">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIGURATION
+// ══════════════════════════════════════════
+
+const CONTROL_HASH = '1255b264090c1727a6cb91c5797fc62f20ad8378249076fa9351329c321c8067';
+
+const CLIENTS = [
+  {
+    name: 'Mozart Coffee Lounge',
+    slug: 'mozart',
+    url:  'https://mozart-cafe-menu.vercel.app',
+    langs: ['el','fr','en','ar','de'],
+    noEvents: true,
+    firebaseConfig: {
+      apiKey:            "AIzaSyAOuYRxE39KDgmizSdqCzAglWrkL4DZXYQ",
+      authDomain:        "mozart-cafe-ae8e0.firebaseapp.com",
+      databaseURL:       "https://mozart-cafe-ae8e0-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId:         "mozart-cafe-ae8e0",
+      storageBucket:     "mozart-cafe-ae8e0.firebasestorage.app",
+      messagingSenderId: "89531105163",
+      appId:             "1:89531105163:web:224863264ff5eebdb9b98e"
+    }
+  },
+  {
+    name: 'Café Élysée',
+    slug: 'cafe-elysee',
+    url:  'https://cafe-elysee-dye1.vercel.app',
+    langs: ['el','fr','en','ar','de'],
+    firebaseConfig: {
+      apiKey:            "AIzaSyCcN6eCTaD_PlTJjO0aKbS1Y3rrDnEwp7s",
+      authDomain:        "cafe-elysee-e186c.firebaseapp.com",
+      databaseURL:       "https://cafe-elysee-e186c-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId:         "cafe-elysee-e186c",
+      storageBucket:     "cafe-elysee-e186c.firebasestorage.app",
+      messagingSenderId: "240164681993",
+      appId:             "1:240164681993:web:13654bfe96f1c83db43bd8"
+    }
+  }
+];
+
+const LANG_LABELS = { el: 'Ελληνικά', fr: 'Français', en: 'English', de: 'Deutsch', ar: 'العربية' };
+
+// ══════════════════════════════════════════
+// SHA-256
+// ══════════════════════════════════════════
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ══════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════
+
+async function tryLogin() {
+  const pw   = document.getElementById('login-pw').value;
+  const hash = await sha256(pw);
+  if (hash === CONTROL_HASH) {
+    sessionStorage.setItem('ctrl_auth', '1');
+    showDashboard();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+document.getElementById('login-pw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') tryLogin();
+});
+
+function logout() {
+  sessionStorage.removeItem('ctrl_auth');
+  location.reload();
+}
+
+// ══════════════════════════════════════════
+// CLOCK
+// ══════════════════════════════════════════
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) +
+    ' · ' +
+    now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+// ══════════════════════════════════════════
+// FIREBASE — instances par client
+// ══════════════════════════════════════════
+
+const _dbs = {};
+
+function getDb(slug) {
+  if (!_dbs[slug]) {
+    const client      = CLIENTS.find(c => c.slug === slug);
+    const existing    = firebase.apps.find(a => a.name === slug);
+    const app         = existing || firebase.initializeApp(client.firebaseConfig, slug);
+    _dbs[slug]        = firebase.database(app);
+  }
+  return _dbs[slug];
+}
+
+// ══════════════════════════════════════════
+// STATUS
+// ══════════════════════════════════════════
+
+async function checkStatus(url) {
+  try {
+    await fetch(url, { method: 'HEAD', mode: 'no-cors', cache: 'no-store' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// ══════════════════════════════════════════
+// BUILD CARD HTML
+// ══════════════════════════════════════════
+
+function buildCard(client) {
+  const s  = client.slug;
+  const id = s.replace(/-/g, '_');
+  const langs    = client.langs || ['fr'];
+  const langOpts = langs.map(l => `<option value="${l}">${LANG_LABELS[l]||l}</option>`).join('');
+  const tog = (key, label, fn) => `
+    <div class="feat-row">
+      <span class="feat-label">${label}</span>
+      <label class="toggle">
+        <input type="checkbox" id="${key}-${id}" onchange="${fn}">
+        <div class="toggle-track"></div><div class="toggle-thumb"></div>
+      </label>
+    </div>`;
+  const chevron = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+  return `
+<div class="client-card collapsed" id="card-${id}">
+  <div class="card-top">
+    <div class="card-name">${client.name}</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="status-dot" id="status-${id}"></div>
+      <button class="card-collapse-btn" onclick="toggleCard('${id}')" title="Réduire / Développer">${chevron}</button>
+    </div>
+  </div>
+
+  <div class="card-links">
+    <a class="card-link" href="${client.url}" target="_blank">Menu ↗</a>
+    <a class="card-link" href="#" onclick="openAdmin(event,'${s}')">Admin ↗</a>
+    <a class="card-link" href="${client.url}/app.html" target="_blank">Serveur ↗</a>
+  </div>
+
+  <div class="card-body">
+    <div class="section-label">🎨 Styles disponibles (licence)</div>
+    <div class="feat-list">
+      ${tog('feat-style-paper',  '📄 Style Papier',    "writeFeatureStyle('"+s+"','paper',this.checked)")}
+      ${tog('feat-style-simple', '🖼️ Style Dynamique', "writeFeatureStyle('"+s+"','simple',this.checked)")}
+    </div>
+
+    <div class="section-label">⚙️ Boutons disponibles (licence)</div>
+    <div class="feat-list">
+      ${tog('feat-btn-callBtn',    '🔔 Bouton sonnette',   "writeFeatureBtn('"+s+"','callBtn',this.checked)")}
+      ${tog('feat-btn-orderUI',    '🛒 Interface commande',"writeFeatureBtn('"+s+"','orderUI',this.checked)")}
+      ${tog('feat-btn-photos',     '🖼️ Photos produits',   "writeFeatureBtn('"+s+"','photos',this.checked)")}
+      ${client.noEvents ? '' : tog('feat-btn-eventOverlay','🎉 Overlay fêtes', "writeFeatureBtn('"+s+"','eventOverlay',this.checked)")}
+    </div>
+
+    <div class="section-label">🌐 Langues disponibles</div>
+    <div class="lang-toggles">
+      ${langs.map(l => `
+      <div class="lang-toggle-row">
+        <span class="lang-toggle-label">${LANG_LABELS[l]||l}</span>
+        <label class="toggle">
+          <input type="checkbox" id="lang-en-${l}-${id}" checked
+                 onchange="onLangToggle('${s}','${l}',this)">
+          <div class="toggle-track"></div><div class="toggle-thumb"></div>
+        </label>
+      </div>`).join('')}
+    </div>
+
+    <div class="section-label">🌐 Langues — Paramètres</div>
+    <div class="lang-section">
+      <div class="lang-row">
+        <span class="lang-label">Langue affichée (1ère visite)</span>
+        <select id="default-lang-${id}" class="lang-sel" onchange="writeDefaultLang('${s}',this.value)">${langOpts}</select>
+      </div>
+      <div class="lang-row">
+        <span class="lang-label">Langue admin (saisie)</span>
+        <select id="primary-lang-${id}" class="lang-sel" onchange="writePrimaryLang('${s}',this.value)">${langOpts}</select>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section-label">Visibilité des Thèmes</div>
+    <div class="toggles" id="theme-toggles-${s}"></div>
+
+    <hr class="divider">
+
+    <div class="section-label">Mot de passe admin</div>
+    <div class="pw-row">
+      <input type="password" id="pw-${id}" placeholder="Nouveau mot de passe">
+      <button class="btn-update" onclick="updatePassword('${s}')">Mettre à jour</button>
+    </div>
+    <div class="pw-feedback" id="pwfb-${id}"></div>
+  </div>
+</div>`;
+}
+
+// ══════════════════════════════════════════
+// CARD TOGGLE
+// ══════════════════════════════════════════
+
+function toggleCard(id) {
+  const card = document.getElementById('card-' + id);
+  if (card) card.classList.toggle('collapsed');
+}
+
+async function openAdmin(e, slug) {
+  e.preventDefault();
+  const client = CLIENTS.find(c => c.slug === slug);
+  await getDb(slug).ref('/config/ctrlBypass').set(Date.now());
+  window.open(client.url + '/admin.html?ctrl=1', '_blank');
+}
+
+// ══════════════════════════════════════════
+// ÉTAT PAR CLIENT (langues)
+// ══════════════════════════════════════════
+
+const _clientState = {};
+
+function getClientState(slug) {
+  if (!_clientState[slug]) _clientState[slug] = { defaultLang: null, primaryLang: null, enabledLangs: {} };
+  return _clientState[slug];
+}
+
+// ══════════════════════════════════════════
+// TOGGLE LANGUE — avec protection popup
+// ══════════════════════════════════════════
+
+let _pendingDisable = null;
+
+async function onLangToggle(slug, lang, checkbox) {
+  const state = getClientState(slug);
+  const enabled = checkbox.checked;
+
+  if (!enabled) {
+    const client = CLIENTS.find(c => c.slug === slug);
+    const remaining = (client.langs || []).filter(l => l !== lang && state.enabledLangs[l] !== false);
+    if (remaining.length === 0) {
+      checkbox.checked = true;
+      return;
+    }
+
+    const isDefault = state.defaultLang === lang;
+    const isPrimary = state.primaryLang === lang;
+
+    if (isDefault || isPrimary) {
+      _pendingDisable = { slug, lang, checkbox };
+      const roles = [];
+      if (isDefault) roles.push('la langue affichée (1ère visite)');
+      if (isPrimary) roles.push('la langue admin (saisie)');
+      document.getElementById('modal-msg').innerHTML =
+        `<strong>${LANG_LABELS[lang]||lang}</strong> est actuellement ${roles.join(' et ')}.<br>Choisissez une langue de remplacement :`;
+      const sel = document.getElementById('modal-sel');
+      sel.innerHTML = remaining.map(l => `<option value="${l}">${LANG_LABELS[l]||l}</option>`).join('');
+      document.getElementById('lang-modal').classList.add('open');
+      return;
+    }
+  }
+
+  await writeEnabledLang(slug, lang, enabled);
+}
+
+async function confirmLangDisable() {
+  if (!_pendingDisable) return;
+  const { slug, lang } = _pendingDisable;
+  const state = getClientState(slug);
+  const replacement = document.getElementById('modal-sel').value;
+
+  await writeEnabledLang(slug, lang, false);
+  if (state.defaultLang === lang) await writeDefaultLang(slug, replacement);
+  if (state.primaryLang === lang) await writePrimaryLang(slug, replacement);
+
+  document.getElementById('lang-modal').classList.remove('open');
+  _pendingDisable = null;
+}
+
+function cancelLangDisable() {
+  if (_pendingDisable) {
+    _pendingDisable.checkbox.checked = true;
+    _pendingDisable = null;
+  }
+  document.getElementById('lang-modal').classList.remove('open');
+}
+
+// ══════════════════════════════════════════
+// THÈMES — VISIBILITÉ
+// ══════════════════════════════════════════
+
+const ALL_THEMES_LIST = [
+  { id: 'gold-noir',     name: 'Gold Noir' },
+  { id: 'neon-tokyo',    name: 'Neon Pulse' },
+  { id: 'botanical',     name: 'Botanical Forest' },
+  { id: 'rose-parisien', name: 'Rose Parisien' },
+  { id: 'midnight-luxe', name: 'Enseigne' },
+  { id: 'velvet-luxe',   name: 'Velvet Luxe' },
+  { id: 'prestige',      name: 'Prestige' },
+  { id: 'santorin',      name: 'Santorini' },
+  { id: 'dyn-bento',     name: 'Dashboard Bento' },
+  { id: 'paper-grunge',  name: 'Street Food' },
+  { id: 'paper-elegant', name: 'Élégance Bistrot' },
+  { id: 'midnight',      name: 'Minuit (Papier)' },
+  { id: 'forest',        name: 'Forêt (Papier)' },
+  { id: 'ruby',          name: 'Rubis (Papier)' }
+];
+
+const THEME_VARIANTS = [
+  {
+    family: 'gold-noir', name: 'Gold Noir',
+    variants: [
+      { id: 'gold-noir',  name: 'Gold Noir (standard)', color: '#c8a44e' },
+      { id: 'midnight',   name: 'Minuit',               color: '#a67cff' },
+      { id: 'forest',     name: 'Forêt',                color: '#5ebd85' },
+      { id: 'ruby',       name: 'Rubis',                color: '#ff6b6b' },
+      { id: 'sapphire',   name: 'Saphir',               color: '#4dabf5' },
+      { id: 'pearl',      name: 'Perle',                color: '#d0d0d0' }
+    ]
+  },
+  {
+    family: 'neon-tokyo', name: 'Neon Pulse',
+    variants: [
+      { id: 'neon-tokyo',  name: 'Teal (standard)', color: '#00f5d4' },
+      { id: 'neon-pink',   name: 'Rose',            color: '#ff0080' },
+      { id: 'neon-purple', name: 'Violet',          color: '#9d4edd' },
+      { id: 'neon-green',  name: 'Vert',            color: '#39ff14' },
+      { id: 'neon-orange', name: 'Orange',          color: '#ff6d00' },
+      { id: 'neon-yellow', name: 'Jaune',           color: '#e9ff70' }
+    ]
+  },
+  {
+    family: 'botanical', name: 'Botanical Forest',
+    variants: [
+      { id: 'botanical',        name: 'Tropical (standard)', color: '#7acc5a' },
+      { id: 'botanical-autumn', name: 'Automne',             color: '#d08c38' },
+      { id: 'botanical-sage',   name: 'Sauge',               color: '#879f84' },
+      { id: 'botanical-earth',  name: 'Terre',               color: '#8b5a2b' },
+      { id: 'botanical-olive',  name: 'Olive',               color: '#556b2f' },
+      { id: 'botanical-sand',   name: 'Sable',               color: '#d2b48c' }
+    ]
+  },
+  {
+    family: 'rose-parisien', name: 'Rose Parisien',
+    variants: [
+      { id: 'rose-parisien', name: 'Rose (standard)', color: '#e890b0' },
+      { id: 'rose-blue',     name: 'Bleu',            color: '#80ccff' },
+      { id: 'rose-lavender', name: 'Lavande',         color: '#9d50db' },
+      { id: 'rose-peach',    name: 'Pêche',           color: '#e87055' },
+      { id: 'rose-mint',     name: 'Menthe',          color: '#1ac4a8' },
+      { id: 'rose-lemon',    name: 'Citron',          color: '#f0c040' }
+    ]
+  },
+  {
+    family: 'midnight-luxe', name: 'Enseigne',
+    variants: [
+      { id: 'midnight-luxe',     name: 'Or (standard)', color: '#f0d060' },
+      { id: 'enseigne-silver',   name: 'Argent',        color: '#c0c0c0' },
+      { id: 'enseigne-copper',   name: 'Cuivre',        color: '#b87333' },
+      { id: 'enseigne-emerald',  name: 'Émeraude',      color: '#50c878' },
+      { id: 'enseigne-sapphire', name: 'Saphir',        color: '#4488ee' },
+      { id: 'enseigne-ruby',     name: 'Rubis',         color: '#e0115f' }
+    ]
+  },
+  {
+    family: 'velvet-luxe', name: 'Velvet Luxe',
+    variants: [
+      { id: 'velvet-luxe',   name: 'Or (standard)', color: '#d4af37' },
+      { id: 'velvet-red',    name: 'Rouge',         color: '#c0102a' },
+      { id: 'velvet-blue',   name: 'Bleu',          color: '#2040c0' },
+      { id: 'velvet-green',  name: 'Vert',          color: '#1a7040' },
+      { id: 'velvet-purple', name: 'Violet',        color: '#8040a0' },
+      { id: 'velvet-black',  name: 'Noir',          color: '#888888' }
+    ]
+  },
+  {
+    family: 'prestige', name: 'Prestige',
+    variants: [
+      { id: 'prestige',          name: 'Or (standard)', color: '#c8a44e' },
+      { id: 'prestige-silver',   name: 'Argent',        color: '#c0c0c0' },
+      { id: 'prestige-bronze',   name: 'Bronze',        color: '#cd7f32' },
+      { id: 'prestige-emerald',  name: 'Émeraude',      color: '#28a030' },
+      { id: 'prestige-sapphire', name: 'Saphir',        color: '#3366cc' },
+      { id: 'prestige-ruby',     name: 'Rubis',         color: '#c42028' }
+    ]
+  },
+  {
+    family: 'santorin', name: 'Santorini',
+    variants: [
+      { id: 'santorin',        name: 'Bleu (standard)',    color: '#4db8ff' },
+      { id: 'santorin-sunset', name: 'Coucher de soleil',  color: '#ff9944' },
+      { id: 'santorin-sand',   name: 'Sable',              color: '#c9a84c' },
+      { id: 'santorin-sea',    name: 'Mer',                color: '#2e8b57' },
+      { id: 'santorin-coral',  name: 'Corail',             color: '#c0446c' },
+      { id: 'santorin-white',  name: 'Blanc',              color: '#f8f8f8' }
+    ]
+  },
+  {
+    family: 'dyn-bento', name: 'Dashboard Bento',
+    variants: [
+      { id: 'dyn-bento',       name: 'Blanc (standard)', color: '#ffffff' },
+      { id: 'dyn-bento-gold',  name: 'Or',               color: '#c8a44e' },
+      { id: 'dyn-bento-neon',  name: 'Néon',             color: '#00f5d4' },
+      { id: 'dyn-bento-blue',  name: 'Bleu',             color: '#1e90ff' },
+      { id: 'dyn-bento-green', name: 'Vert',             color: '#00fa9a' },
+      { id: 'dyn-bento-pink',  name: 'Rose',             color: '#ff69b4' }
+    ]
+  }
+];
+
+let pendingThemeDisable = null;
+
+window.toggleThemeVis = function(slug, themeId, isChecked) {
+  const db = getDb(slug);
+
+  if (!isChecked) {
+    db.ref('menu').once('value').then(snap => {
+      const data = snap.val() || {};
+      const activeTheme = data.menuTheme || 'gold-noir';
+      const hiddenThemes = data.hiddenThemes || {};
+
+      if (activeTheme === themeId) {
+        pendingThemeDisable = { slug, themeId, db };
+        const sel = document.getElementById('theme-modal-sel');
+        sel.innerHTML = ALL_THEMES_LIST
+          .filter(th => th.id !== themeId && !hiddenThemes[th.id])
+          .map(th => `<option value="${th.id}">${th.name}</option>`)
+          .join('');
+        const themeName = (ALL_THEMES_LIST.find(t => t.id === themeId) || {}).name || themeId;
+        document.getElementById('theme-modal-msg').textContent =
+          `Le thème "${themeName}" est actuellement utilisé par le menu. Choisissez un autre thème pour le remplacer avant de le masquer :`;
+        document.getElementById('theme-modal').classList.add('open');
+      } else {
+        db.ref('menu/hiddenThemes/' + themeId).set(true);
+      }
+    });
+  } else {
+    db.ref('menu/hiddenThemes/' + themeId).set(null);
+  }
+};
+
+window.confirmThemeDisable = function() {
+  if (!pendingThemeDisable) return;
+  const { themeId, db } = pendingThemeDisable;
+  const newTheme = document.getElementById('theme-modal-sel').value;
+  db.ref('menu').update({
+    menuTheme: newTheme,
+    ['hiddenThemes/' + themeId]: true
+  }).then(() => {
+    document.getElementById('theme-modal').classList.remove('open');
+    pendingThemeDisable = null;
+  });
+};
+
+window.cancelThemeDisable = function() {
+  if (!pendingThemeDisable) {
+    document.getElementById('theme-modal').classList.remove('open');
+    return;
+  }
+  const { slug, themeId } = pendingThemeDisable;
+  const cb = document.querySelector(`#theme-toggles-${slug} input[data-id="${themeId}"]`);
+  if (cb) cb.checked = true;
+  document.getElementById('theme-modal').classList.remove('open');
+  pendingThemeDisable = null;
+};
+
+// ══════════════════════════════════════════
+// VARIANTES DE THÈME — POPUP
+// ══════════════════════════════════════════
+
+const _clientVariants = {};
+let _variantSlug   = null;
+let _variantFamily = null;
+
+function openVariantPopup(slug, family) {
+  const tv = THEME_VARIANTS.find(t => t.family === family);
+  if (!tv) return;
+  _variantSlug   = slug;
+  _variantFamily = family;
+
+  const saved          = (_clientVariants[slug] && _clientVariants[slug][family]) || {};
+  const hiddenVariants = saved.hidden  || {};
+  const defaultVariant = saved.default || tv.variants[0].id;
+
+  document.getElementById('variant-modal-title').textContent = tv.name + ' — Couleurs';
+
+  const list = document.getElementById('variant-list');
+  list.innerHTML = tv.variants.map(v => `
+    <div class="variant-item">
+      <input type="checkbox" class="variant-cb" id="vcb-${v.id}" value="${v.id}"
+             ${!hiddenVariants[v.id] ? 'checked' : ''} onchange="onVariantCheckChange('${v.id}')">
+      <div class="variant-dot" style="background:${v.color}"></div>
+      <label class="variant-name" for="vcb-${v.id}">${v.name}</label>
+    </div>`).join('');
+
+  _buildDefaultSelect(tv, hiddenVariants, defaultVariant);
+  document.getElementById('variant-modal').classList.add('open');
+}
+
+function _buildDefaultSelect(tv, hiddenVariants, currentDefault) {
+  const sel     = document.getElementById('variant-default-sel');
+  const visible = tv.variants.filter(v => !hiddenVariants[v.id]);
+  sel.innerHTML = visible.map(v =>
+    `<option value="${v.id}" ${v.id === currentDefault ? 'selected' : ''}>${v.name}</option>`
+  ).join('');
+  if (!visible.find(v => v.id === currentDefault) && visible.length > 0) {
+    sel.value = visible[0].id;
+  }
+}
+
+function onVariantCheckChange(changedVarId) {
+  const tv = THEME_VARIANTS.find(t => t.family === _variantFamily);
+  if (!tv) return;
+
+  const defSel   = document.getElementById('variant-default-sel');
+  const curDef   = defSel.value;
+  const checkedIds = tv.variants
+    .filter(v => { const cb = document.getElementById(`vcb-${v.id}`); return cb && cb.checked; })
+    .map(v => v.id);
+
+  // If the unchecked variant was the default AND other variants remain → auto-check standard
+  if (changedVarId === curDef && checkedIds.length > 0) {
+    const standardId = tv.variants[0].id;
+    if (!checkedIds.includes(standardId)) {
+      const cb = document.getElementById(`vcb-${standardId}`);
+      if (cb) { cb.checked = true; checkedIds.push(standardId); }
+    }
+  }
+
+  const hiddenVariants = {};
+  tv.variants.forEach(v => { if (!checkedIds.includes(v.id)) hiddenVariants[v.id] = true; });
+  _buildDefaultSelect(tv, hiddenVariants, curDef);
+}
+
+function onVariantDefaultChange() { /* handled by _buildDefaultSelect */ }
+
+async function saveVariantConfig() {
+  const tv = THEME_VARIANTS.find(t => t.family === _variantFamily);
+  if (!tv || !_variantSlug) return;
+
+  const hiddenVariants = {};
+  let allHidden = true;
+  tv.variants.forEach(v => {
+    const cb = document.getElementById(`vcb-${v.id}`);
+    if (cb && !cb.checked) { hiddenVariants[v.id] = true; }
+    else { allHidden = false; }
+  });
+
+  const defaultVariant = document.getElementById('variant-default-sel').value || tv.variants[0].id;
+  const db = getDb(_variantSlug);
+
+  await db.ref(`/config/features/themeVariants/${_variantFamily}`).set({
+    hidden:  Object.keys(hiddenVariants).length > 0 ? hiddenVariants : null,
+    default: defaultVariant
+  }).catch(console.error);
+
+  if (allHidden) {
+    // Hide the whole theme family
+    await db.ref('menu/hiddenThemes/' + _variantFamily).set(true).catch(console.error);
+    const cb = document.querySelector(`#theme-toggles-${_variantSlug} input[data-id="${_variantFamily}"]`);
+    if (cb) cb.checked = false;
+  } else {
+    // If active theme is now a hidden variant → switch to default
+    const menuSnap   = await db.ref('menu').once('value');
+    const activeTheme = (menuSnap.val() || {}).menuTheme || tv.variants[0].id;
+    if (tv.variants.some(v => v.id === activeTheme) && hiddenVariants[activeTheme]) {
+      await db.ref('menu/menuTheme').set(defaultVariant).catch(console.error);
+    }
+  }
+
+  closeVariantModal();
+}
+
+function closeVariantModal() {
+  document.getElementById('variant-modal').classList.remove('open');
+  _variantSlug   = null;
+  _variantFamily = null;
+}
+
+// ══════════════════════════════════════════
+// INIT LISTENERS PAR CLIENT
+// ══════════════════════════════════════════
+
+function initClient(client) {
+  const s  = client.slug;
+  const id = s.replace(/-/g, '_');
+  const db = getDb(s);
+
+  // Styles disponibles (licence)
+  db.ref('/config/features/styles').on('value', snap => {
+    const styles = snap.val() || {};
+    ['simple','paper'].forEach(style => {
+      const el = document.getElementById(`feat-style-${style}-${id}`);
+      if (el) el.checked = styles[style] !== false;
+    });
+  });
+
+  // Boutons disponibles (licence)
+  db.ref('/config/features/buttons').on('value', snap => {
+    const buttons = snap.val() || {};
+    ['callBtn','orderUI','photos','eventOverlay'].forEach(btn => {
+      const el = document.getElementById(`feat-btn-${btn}-${id}`);
+      if (el) el.checked = buttons[btn] !== false;
+    });
+  });
+
+  // Langue par défaut (menu visiteur)
+  db.ref('/config/defaultLang').on('value', snap => {
+    const val = snap.val();
+    getClientState(s).defaultLang = val;
+    const el = document.getElementById(`default-lang-${id}`);
+    if (el && val) el.value = val;
+  });
+
+  // Langue principale (saisie admin)
+  db.ref('/config/primaryLang').on('value', snap => {
+    const val = snap.val();
+    getClientState(s).primaryLang = val;
+    const el = document.getElementById(`primary-lang-${id}`);
+    if (el && val) el.value = val;
+  });
+
+  // Langues disponibles (toggles)
+  db.ref('/config/enabledLangs').on('value', snap => {
+    const enabledLangs = snap.val() || {};
+    getClientState(s).enabledLangs = enabledLangs;
+    (client.langs || []).forEach(l => {
+      const el = document.getElementById(`lang-en-${l}-${id}`);
+      if (el) el.checked = enabledLangs[l] !== false;
+    });
+  });
+
+  // Fête active
+  db.ref('/menu/activeEvent').on('value', snap => {
+    const val = snap.val() || '';
+    const el = document.getElementById(`event-sel-${id}`);
+    if (el) el.value = val;
+  });
+
+  // Statut
+  checkStatus(client.url).then(online => {
+    const dot = document.getElementById(`status-${id}`);
+    if (dot) dot.classList.add(online ? 'online' : 'offline');
+  });
+
+  // Variantes de thème
+  db.ref('/config/features/themeVariants').on('value', snap => {
+    _clientVariants[s] = snap.val() || {};
+  });
+
+  // Thèmes masqués
+  db.ref('menu/hiddenThemes').on('value', snap => {
+    const hiddenData = snap.val() || {};
+    const ctn = document.getElementById(`theme-toggles-${s}`);
+    if (!ctn) return;
+    ctn.innerHTML = ALL_THEMES_LIST.map(th => {
+      const isVisible = !hiddenData[th.id];
+      const hasVariants = THEME_VARIANTS.some(tv => tv.family === th.id);
+      return `
+        <div class="toggle-row">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="toggle-label">${th.name}</span>
+            ${hasVariants ? `<button class="variant-btn" onclick="openVariantPopup('${s}','${th.id}')">🎨</button>` : ''}
+          </div>
+          <label class="toggle">
+            <input type="checkbox" data-id="${th.id}" ${isVisible ? 'checked' : ''} onchange="toggleThemeVis('${s}', '${th.id}', this.checked)">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>`;
+    }).join('');
+  });
+}
+
+// ══════════════════════════════════════════
+// FIREBASE WRITES
+// ══════════════════════════════════════════
+
+const STYLE_PRIORITY = ['paper','simple'];
+
+async function writeFeatureStyle(slug, style, enabled) {
+  const db = getDb(slug);
+  await db.ref(`/config/features/styles/${style}`).set(enabled).catch(console.error);
+
+  if (!enabled) {
+    // Si le style actif vient d'être désactivé → basculer sur le prochain disponible
+    const snap = await db.ref('/config/features/styles').once('value');
+    const styles = snap.val() || {};
+    const currentSnap = await db.ref('/menu/menuStyle').once('value');
+    const current = currentSnap.val() || 'paper';
+    if (current === style) {
+      const next = STYLE_PRIORITY.find(s => s !== style && styles[s] !== false);
+      if (next) {
+        await db.ref('/menu/menuStyle').set(next).catch(console.error);
+      }
+    }
+  }
+}
+
+async function writeFeatureBtn(slug, btn, enabled) {
+  const db = getDb(slug);
+  await db.ref(`/config/features/buttons/${btn}`).set(enabled).catch(console.error);
+
+  const keyMap = { callBtn: 'showCallBtn', orderUI: 'showOrderUI', photos: 'showPhotos', eventOverlay: 'showEventOverlay' };
+  const fireKey = keyMap[btn];
+  if (fireKey) {
+    await db.ref(`/menu/info/${fireKey}`).set(enabled).catch(console.error);
+  }
+  // Si l'overlay fêtes est désactivé → effacer la fête active
+  if (btn === 'eventOverlay' && !enabled) {
+    await db.ref('/menu/activeEvent').set(null).catch(console.error);
+  }
+}
+
+async function writeActiveEvent(slug, eventId) {
+  await getDb(slug).ref('/menu/activeEvent').set(eventId || null).catch(console.error);
+}
+
+async function writeDefaultLang(slug, lang) {
+  await getDb(slug).ref('/config/defaultLang').set(lang).catch(console.error);
+}
+
+async function writePrimaryLang(slug, lang) {
+  await getDb(slug).ref('/config/primaryLang').set(lang).catch(console.error);
+}
+
+async function writeEnabledLang(slug, lang, enabled) {
+  await getDb(slug).ref(`/config/enabledLangs/${lang}`).set(enabled).catch(console.error);
+}
+
+async function updatePassword(slug) {
+  const id       = slug.replace(/-/g, '_');
+  const input    = document.getElementById(`pw-${id}`);
+  const feedback = document.getElementById(`pwfb-${id}`);
+  const btn      = input.nextElementSibling;
+
+  const pw = input.value.trim();
+  if (!pw) {
+    feedback.textContent = 'Entrez un mot de passe.';
+    feedback.className   = 'pw-feedback err';
+    return;
+  }
+
+  btn.disabled         = true;
+  feedback.textContent = '';
+
+  try {
+    const hash = await sha256(pw);
+    await getDb(slug).ref('/config/adminHash').set(hash);
+    feedback.textContent = '✓ Mis à jour';
+    feedback.className   = 'pw-feedback ok';
+    input.value          = '';
+    setTimeout(() => { feedback.textContent = ''; }, 3000);
+  } catch {
+    feedback.textContent = 'Erreur Firebase';
+    feedback.className   = 'pw-feedback err';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD INIT
+// ══════════════════════════════════════════
+
+// ══════════════════════════════════════════
+// DEMO PHOTOS
+// ══════════════════════════════════════════
+
+const DP_SLIDES = 5;
+const DP_CLOUD  = 'dowi189l9';
+const DP_PRESET = 'menu_photos';
+
+function toggleDpSection() {
+  document.getElementById('dp-section').classList.toggle('open');
+}
+
+function dpSetImg(i, url) {
+  const img = document.getElementById('dp-img-' + i);
+  const cam = document.getElementById('dp-cam-' + i);
+  if (url) { img.src = url; img.style.display = 'block'; cam.style.display = 'none'; }
+  else      { img.style.display = 'none'; img.src = ''; cam.style.display = 'flex'; }
+}
+
+function initDemoPhotos() {
+  const grid = document.getElementById('dp-grid');
+  let html = '';
+  for (let i = 1; i <= DP_SLIDES; i++) {
+    html += `
+      <div class="dp-item">
+        <div class="dp-num">Photo ${i}</div>
+        <div class="dp-preview">
+          <img id="dp-img-${i}" src="" alt="">
+          <div class="dp-cam" id="dp-cam-${i}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M8 5l1.5-2h5L16 5"/></svg>
+            <span>Aucune photo</span>
+          </div>
+        </div>
+        <div class="dp-btns">
+          <label class="dp-upload-btn" for="dp-file-${i}" id="dp-lbl-${i}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Choisir
+          </label>
+          <input type="file" id="dp-file-${i}" accept="image/*" style="display:none" onchange="dpUpload(${i})">
+          <button class="dp-del-btn" onclick="dpDelete(${i})" title="Supprimer">✕</button>
+        </div>
+        <div class="dp-spin" id="dp-spin-${i}">⏳ Upload en cours…</div>
+      </div>`;
+  }
+  grid.innerHTML = html;
+
+  // Charger les photos existantes depuis Firebase
+  const db = getDb('cafe-elysee');
+  db.ref('demoPage/heroSlides').once('value', snap => {
+    const data = snap.val() || {};
+    for (let i = 1; i <= DP_SLIDES; i++) {
+      if (data[i]) dpSetImg(i, data[i]);
+    }
+  });
+}
+
+function dpUpload(i) {
+  const file = document.getElementById('dp-file-' + i).files[0];
+  if (!file) return;
+  const lbl  = document.getElementById('dp-lbl-' + i);
+  const spin = document.getElementById('dp-spin-' + i);
+  lbl.style.display  = 'none';
+  spin.style.display = 'block';
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 1600;
+      let w = img.width, h = img.height;
+      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      dpSetImg(i, canvas.toDataURL('image/jpeg', 0.82)); // aperçu local immédiat
+      canvas.toBlob(async blob => {
+        try {
+          const fd = new FormData();
+          fd.append('file', blob);
+          fd.append('upload_preset', DP_PRESET);
+          const res  = await fetch(`https://api.cloudinary.com/v1_1/${DP_CLOUD}/image/upload`, { method: 'POST', body: fd });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.error?.message || 'Upload échoué');
+          dpSetImg(i, json.secure_url);
+          getDb('cafe-elysee').ref('demoPage/heroSlides/' + i).set(json.secure_url);
+          const ok = document.getElementById('dp-ok');
+          ok.style.display = 'block';
+          setTimeout(() => ok.style.display = 'none', 2500);
+        } catch(err) {
+          console.error('dp upload error', err);
+          dpSetImg(i, '');
+        } finally {
+          lbl.style.display  = '';
+          spin.style.display = 'none';
+          document.getElementById('dp-file-' + i).value = '';
+        }
+      }, 'image/jpeg', 0.82);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function dpDelete(i) {
+  dpSetImg(i, '');
+  getDb('cafe-elysee').ref('demoPage/heroSlides/' + i).set('');
+}
+
+function showDashboard() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display    = 'block';
+
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  initDemoPhotos();
+
+  const grid    = document.getElementById('clients-grid');
+  grid.innerHTML = CLIENTS.map(buildCard).join('');
+  CLIENTS.forEach(initClient);
+}
+
+// ══════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════
+
+if (sessionStorage.getItem('ctrl_auth') === '1') {
+  showDashboard();
+}
+</script>
+</body>
+</html>
