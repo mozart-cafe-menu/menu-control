@@ -500,20 +500,23 @@
     .lang-toggle-label { font-size: 0.84rem; }
 
     /* ─── COLLAPSIBLE CARD ─── */
+    .client-card { padding: 0; }
     .card-top {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
-      margin-bottom: 1rem;
       cursor: pointer;
       user-select: none;
-      margin: -1.5rem -1.5rem 1rem -1.5rem;
-      padding: 1.5rem 1.5rem 1rem 1.5rem;
+      padding: 1.25rem 1.5rem;
       border-radius: 18px 18px 0 0;
       transition: background 0.2s;
     }
-    .card-top:hover { background: rgba(200,164,78,0.05); }
-    .client-card.collapsed .card-top { border-radius: 18px; margin-bottom: -1rem; padding-bottom: 1.5rem; }
+    .card-top:hover { background: rgba(200,164,78,0.06); }
+    .client-card.collapsed .card-top { border-radius: 18px; }
+    .card-body-wrap {
+      padding: 0.75rem 1.5rem 1.5rem;
+      border-top: 1px solid rgba(200,164,78,0.08);
+    }
     .card-collapse-btn {
       background: none;
       border: none;
@@ -1087,13 +1090,13 @@ function buildCard(client) {
     </div>
   </div>
 
-  <div class="card-links">
-    <a class="card-link" href="${client.url}" target="_blank">Menu ↗</a>
-    <a class="card-link" href="#" onclick="openAdmin(event,'${s}')">Admin ↗</a>
-  </div>
-
   <div class="card-body">
-    <div class="section-label">🎨 Styles disponibles (licence)</div>
+    <div class="card-body-wrap">
+      <div class="card-links">
+        <a class="card-link" href="${client.url}" target="_blank">Menu ↗</a>
+        <a class="card-link" href="#" onclick="openAdmin(event,'${s}')">Admin ↗</a>
+      </div>
+      <div class="section-label">🎨 Styles disponibles (licence)</div>
     <div class="feat-list">
       ${tog('feat-style-paper',  '📄 Style Papier',    "writeFeatureStyle('"+s+"','paper',this.checked)")}
       ${tog('feat-style-simple', '🖼️ Style Dynamique', "writeFeatureStyle('"+s+"','simple',this.checked)")}
@@ -1160,6 +1163,7 @@ function buildCard(client) {
       <select class="retention-sel" id="ret-orders-${id}" onchange="writeRetention('${s}','orders',this)">
         ${retentionOptions()}
       </select>
+    </div>
     </div>
   </div>
 </div>`;
@@ -1911,13 +1915,15 @@ function showDashboard() {
     <div class="card-name">Page Demo</div>
     <button class="card-collapse-btn" tabindex="-1">${chevron}</button>
   </div>
-  <div class="card-links">
-    <a class="card-link" href="https://menu-pro-demo.vercel.app/" target="_blank">Demo ↗</a>
-  </div>
   <div class="card-body">
-    <p style="font-size:0.81rem;color:var(--muted);margin-bottom:1.2rem;">Upload les 5 photos du carrousel depuis ton appareil. Laisser vide = fond sombre par défaut. Les changements s'affichent immédiatement sur la <a href="https://menu-pro-demo.vercel.app/" target="_blank" style="color:var(--gold);">page Démo</a>.</p>
-    <div class="dp-grid" id="dp-grid"></div>
-    <span class="dp-ok" id="dp-ok">✓ Photo enregistrée</span>
+    <div class="card-body-wrap">
+      <div class="card-links">
+        <a class="card-link" href="https://menu-pro-demo.vercel.app/" target="_blank">Demo ↗</a>
+      </div>
+      <p style="font-size:0.81rem;color:var(--muted);margin-bottom:1.2rem;">Upload les 5 photos du carrousel depuis ton appareil. Laisser vide = fond sombre par défaut. Les changements s'affichent immédiatement sur la <a href="https://menu-pro-demo.vercel.app/" target="_blank" style="color:var(--gold);">page Démo</a>.</p>
+      <div class="dp-grid" id="dp-grid"></div>
+      <span class="dp-ok" id="dp-ok">✓ Photo enregistrée</span>
+    </div>
   </div>
 </div>`;
   grid.innerHTML = demoCard + CLIENTS.map(buildCard).join('');
