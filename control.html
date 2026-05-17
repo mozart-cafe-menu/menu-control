@@ -505,18 +505,27 @@
       align-items: flex-start;
       justify-content: space-between;
       margin-bottom: 1rem;
+      cursor: pointer;
+      user-select: none;
+      margin: -1.5rem -1.5rem 1rem -1.5rem;
+      padding: 1.5rem 1.5rem 1rem 1.5rem;
+      border-radius: 18px 18px 0 0;
+      transition: background 0.2s;
     }
+    .card-top:hover { background: rgba(200,164,78,0.05); }
+    .client-card.collapsed .card-top { border-radius: 18px; margin-bottom: -1rem; padding-bottom: 1.5rem; }
     .card-collapse-btn {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
+      background: none;
+      border: none;
       cursor: pointer;
       color: var(--muted);
-      padding: 4px 6px;
-      border-radius: 7px;
-      transition: color 0.2s, border-color 0.2s, background 0.2s;
+      padding: 0;
+      display: flex; align-items: center;
+      transition: color 0.2s;
       flex-shrink: 0;
+      pointer-events: none;
     }
-    .card-collapse-btn:hover { color: var(--gold); border-color: rgba(200,164,78,0.35); background: var(--gold-dim); }
+    .card-top:hover .card-collapse-btn { color: var(--gold); }
     .card-collapse-btn svg { transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); display: block; }
     .client-card.collapsed .card-collapse-btn svg { transform: rotate(-90deg); }
     .card-body {
@@ -1070,11 +1079,11 @@ function buildCard(client) {
   const chevron = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
   return `
 <div class="client-card collapsed" id="card-${id}">
-  <div class="card-top">
+  <div class="card-top" onclick="toggleCard('${id}')">
     <div class="card-name">${client.name}</div>
     <div style="display:flex;align-items:center;gap:8px;">
       <div class="status-dot" id="status-${id}"></div>
-      <button class="card-collapse-btn" onclick="toggleCard('${id}')" title="Réduire / Développer">${chevron}</button>
+      <button class="card-collapse-btn" tabindex="-1">${chevron}</button>
     </div>
   </div>
 
@@ -1257,8 +1266,8 @@ const ALL_THEMES_LIST = [
   { id: 'prestige',      name: 'Prestige' },
   { id: 'santorin',      name: 'Santorini' },
   { id: 'dyn-bento',     name: 'Dashboard Bento' },
-  { id: 'paper-grunge',  name: 'Street Food' },
-  { id: 'paper-elegant', name: 'Élégance Bistrot' },
+  { id: 'paper-grunge',  name: 'Street Food (Papier)' },
+  { id: 'paper-elegant', name: 'Élégance Bistrot (Papier)' },
   { id: 'midnight',      name: 'Minuit (Papier)' },
   { id: 'forest',        name: 'Forêt (Papier)' },
   { id: 'ruby',          name: 'Rubis (Papier)' }
@@ -1898,9 +1907,9 @@ function showDashboard() {
   const chevron = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
   const demoCard = `
 <div class="client-card collapsed" id="card-demo_page">
-  <div class="card-top">
+  <div class="card-top" onclick="toggleCard('demo_page')">
     <div class="card-name">Page Demo</div>
-    <button class="card-collapse-btn" onclick="toggleCard('demo_page')" title="Réduire / Développer">${chevron}</button>
+    <button class="card-collapse-btn" tabindex="-1">${chevron}</button>
   </div>
   <div class="card-links">
     <a class="card-link" href="https://menu-pro-demo.vercel.app/" target="_blank">Demo ↗</a>
