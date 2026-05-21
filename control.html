@@ -976,6 +976,13 @@
 <div class="modal-overlay" id="variant-modal">
   <div class="modal-box variant-modal-box">
     <h3 id="variant-modal-title">Couleurs</h3>
+    <div id="variant-std-row" style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 10px;background:rgba(212,170,82,0.06);border-radius:8px;border:1px dashed rgba(212,170,82,0.3);">
+      <div id="variant-std-dot" style="width:22px;height:22px;border-radius:50%;flex-shrink:0;border:2px dashed rgba(255,255,255,0.5);"></div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);opacity:0.8;">Standard actuelle</div>
+        <div id="variant-std-name" style="font-size:0.82rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+      </div>
+    </div>
     <div id="variant-all-list" class="variant-list"></div>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeVariantModal()">Annuler</button>
@@ -1778,6 +1785,23 @@ function openVariantPopup(slug, themeId) {
 
   document.getElementById('variant-modal-title').textContent = themeName + ' — Couleurs';
 
+  // Swatch Standard actuelle
+  let stdColor, stdLabel;
+  if (curDefHex) {
+    stdColor = curDefHex;
+    const idx = _CTRL_COLORS.indexOf(curDefHex);
+    stdLabel = idx >= 0 ? _CTRL_NAMES[idx] : curDefHex;
+  } else if (tv) {
+    const defVariant = tv.variants.find(v => v.id === curDef) || tv.variants[0];
+    stdColor = defVariant.color;
+    stdLabel = defVariant.name;
+  } else {
+    stdColor = themeEntry.accent || '#c8a44e';
+    stdLabel = themeEntry.name || themeId;
+  }
+  document.getElementById('variant-std-dot').style.background = stdColor;
+  document.getElementById('variant-std-name').textContent = stdLabel;
+
   const refColors = tv ? tv.variants.map(v => v.color) : [themeEntry.accent || '#c8a44e'];
   const list = document.getElementById('variant-all-list');
   list.innerHTML = '';
@@ -1813,6 +1837,8 @@ function openVariantPopup(slug, themeId) {
       if (eye.classList.contains('is-hidden')) return;
       list.querySelectorAll('.variant-star-btn').forEach(b => b.classList.remove('is-std'));
       star.classList.add('is-std');
+      document.getElementById('variant-std-dot').style.background = colorVal;
+      document.getElementById('variant-std-name').textContent = colorLabel;
     });
     item.appendChild(dot); item.appendChild(lbl); item.appendChild(eye); item.appendChild(star);
     return item;
