@@ -444,6 +444,16 @@
     }
     .card-link:hover { background: rgba(200,164,78,0.24); }
 
+    .theme-type-sep {
+      font-size: 0.58rem; text-transform: uppercase;
+      letter-spacing: 0.14em; color: var(--gold);
+      opacity: 0.65;
+      margin: 0.7rem 0 0.25rem;
+      padding: 0.18rem 0.5rem;
+      background: rgba(212,170,82,0.06);
+      border-radius: 4px;
+    }
+    .theme-type-sep:first-child { margin-top: 0.1rem; }
     .section-label {
       font-size: 0.65rem; text-transform: uppercase;
       letter-spacing: 0.12em; color: var(--muted);
@@ -1440,13 +1450,24 @@ function buildClientCard(client) {
            '<div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>';
   }
 
-  const themeToggles = ALL_THEMES_LIST.map(th => {
-    const btn = '<button class="variant-btn" onclick="openVariantPopup(\''+s+'\',\''+th.id+'\')">Couleurs</button>';
+  const CTRL_CARTE_IDS  = new Set(['carte-classique']);
+  const CTRL_LIVRE_IDS  = new Set(['paper-elegant']);
+  const CTRL_ELEGANT_IDS = new Set(THEME_VARIANTS.map(t => t.family));
+  function _makeThemeRow(th) {
+    const hasVariants = THEME_VARIANTS.some(t => t.family === th.id);
+    const btn = hasVariants ? '<button class="variant-btn" onclick="openVariantPopup(\''+s+'\',\''+th.id+'\')">Couleurs</button>' : '';
     return '<div class="toggle-row"><span class="toggle-label">'+th.name+btn+'</span>'+
            '<label class="toggle"><input type="checkbox" data-id="'+th.id+'" '+
            'onchange="toggleThemeVis(\''+s+'\',\''+th.id+'\',this.checked)">'+
            '<div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>';
-  }).join('');
+  }
+  const carteThemes   = ALL_THEMES_LIST.filter(th => CTRL_CARTE_IDS.has(th.id));
+  const livreThemes   = ALL_THEMES_LIST.filter(th => CTRL_LIVRE_IDS.has(th.id));
+  const elegantThemes = ALL_THEMES_LIST.filter(th => CTRL_ELEGANT_IDS.has(th.id));
+  const themeToggles =
+    (carteThemes.length   ? '<div class="theme-type-sep">🃏 Carte</div>'   + carteThemes.map(_makeThemeRow).join('')   : '') +
+    (livreThemes.length   ? '<div class="theme-type-sep">📖 Livre</div>'   + livreThemes.map(_makeThemeRow).join('')   : '') +
+    (elegantThemes.length ? '<div class="theme-type-sep">✨ Élégant</div>' + elegantThemes.map(_makeThemeRow).join('') : '');
 
   const div = document.createElement('div');
   div.className = 'client-card';
