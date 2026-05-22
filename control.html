@@ -1806,7 +1806,7 @@ function openVariantPopup(slug, themeId) {
   const list = document.getElementById('variant-all-list');
   list.innerHTML = '';
 
-  function makeItem(colorVal, colorLabel, dataType, isHidden, isStd) {
+  function makeItem(colorVal, colorLabel, dataType, isHidden, isStd, dataVal) {
     const item = document.createElement('div');
     item.className = 'variant-item' + (isHidden ? ' is-hidden-color' : '');
     const dot = document.createElement('div');
@@ -1818,7 +1818,7 @@ function openVariantPopup(slug, themeId) {
     const eye = document.createElement('button');
     eye.className = 'variant-eye-btn' + (isHidden ? ' is-hidden' : '');
     eye.textContent = isHidden ? '🙈' : '👁';
-    eye.dataset.val = colorVal; eye.dataset.type = dataType;
+    eye.dataset.val = dataVal || colorVal; eye.dataset.type = dataType;
     eye.title = isHidden ? 'Afficher' : 'Masquer';
     eye.addEventListener('click', () => {
       const nowHidden = eye.classList.toggle('is-hidden');
@@ -1832,7 +1832,7 @@ function openVariantPopup(slug, themeId) {
     const star = document.createElement('button');
     star.className = 'variant-star-btn' + (isStd ? ' is-std' : '');
     star.textContent = '⭐';
-    star.dataset.val = colorVal; star.dataset.type = dataType;
+    star.dataset.val = dataVal || colorVal; star.dataset.type = dataType;
     star.addEventListener('click', () => {
       if (eye.classList.contains('is-hidden')) return;
       list.querySelectorAll('.variant-star-btn').forEach(b => b.classList.remove('is-std'));
@@ -1848,13 +1848,13 @@ function openVariantPopup(slug, themeId) {
     tv.variants.forEach(v => {
       const isHidden = !!hiddenV[v.id];
       const isStd = !isHidden && !curDefHex && v.id === curDef;
-      list.appendChild(makeItem(v.color, v.name, 'variant', isHidden, isStd));
+      list.appendChild(makeItem(v.color, v.name, 'variant', isHidden, isStd, v.id));
     });
   }
 
   _CTRL_COLORS.forEach((hex, i) => {
     if (refColors.some(rc => _colorDist(hex, rc) < 55)) return;
-    const isHidden = !!hiddenU[hex];
+    const isHidden = !!hiddenU[hex.replace('#','')];
     const isStd = !isHidden && curDefHex === hex;
     list.appendChild(makeItem(hex, _CTRL_NAMES[i], 'univ', isHidden, isStd));
   });
@@ -1877,7 +1877,7 @@ function saveVariantConfig() {
 
   list.querySelectorAll('.variant-eye-btn.is-hidden').forEach(btn => {
     if (btn.dataset.type === 'variant') cfg.hidden[btn.dataset.val] = true;
-    else cfg.hiddenUniversal[btn.dataset.val] = true;
+    else cfg.hiddenUniversal[btn.dataset.val.replace('#','')] = true;
   });
 
   if (stdBtn) {
